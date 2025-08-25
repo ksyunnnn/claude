@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Claude Commands
 
-## Getting Started
+Claude Codeのカスタムスラッシュコマンドを共有・管理するWebアプリケーション
 
-First, run the development server:
+## 概要
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Claude Commandsは、開発者がClaude Code用のカスタムスラッシュコマンドを簡単に共有・発見できるプラットフォームです。GitHubアカウントでログインし、自分のコマンドを投稿したり、他のユーザーが作成したコマンドを利用できます。
+
+## 主な機能
+
+- 🔐 GitHub OAuthによる認証
+- 📝 カスタムコマンドの作成・編集・削除
+- 🔒 公開/非公開設定
+- 📋 ワンクリックでコマンドをコピー
+- 👤 ユーザープロファイル管理
+- 🎨 モダンなUI（shadcn/ui使用）
+
+## 技術スタック
+
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Database**: Supabase
+- **Authentication**: Supabase Auth (GitHub OAuth)
+- **Styling**: Tailwind CSS v4
+- **UI Components**: shadcn/ui
+- **Testing**: Playwright
+- **Deployment**: Vercel
+
+## セットアップ
+
+### 前提条件
+
+- Node.js 18以上
+- npm または yarn
+- Supabaseアカウント
+- GitHubアカウント（OAuth用）
+
+### 環境変数の設定
+
+`.env.local`ファイルを作成し、以下の環境変数を設定してください：
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Supabaseのセットアップ
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Supabaseダッシュボードで新しいプロジェクトを作成
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. SQLエディタで`supabase/migrations/001_initial_schema.sql`の内容を実行
 
-## Learn More
+3. Authentication > Providers > GitHubを有効化し、以下を設定：
+   - Client ID: GitHubで取得したOAuth App ID
+   - Client Secret: GitHubで取得したOAuth App Secret
+   - Redirect URL: `https://your-project.supabase.co/auth/v1/callback`
 
-To learn more about Next.js, take a look at the following resources:
+### インストールと起動
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# 依存関係のインストール
+npm install
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# 開発サーバーの起動
+npm run dev
 
-## Deploy on Vercel
+# ビルド
+npm run build
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# 本番サーバーの起動
+npm start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 開発
+
+### ディレクトリ構造
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── [userId]/          # ユーザーページ
+│   ├── new/               # 新規コマンド作成
+│   ├── settings/          # 設定画面
+│   └── ...
+├── components/            # UIコンポーネント
+├── lib/                   # ユーティリティ
+└── types/                 # 型定義
+```
+
+### コマンド
+
+```bash
+# 開発サーバー（Turbopack使用）
+npm run dev
+
+# コード品質チェック
+npm run lint
+
+# ビルド
+npm run build
+
+# E2Eテスト
+npm run test:e2e
+
+# E2Eテスト（UI付き）
+npm run test:e2e:ui
+```
+
+## 使い方
+
+1. GitHubアカウントでログイン
+2. 「New Command」ボタンからコマンドを作成
+3. コマンド名、説明、内容を入力
+4. 公開/非公開を選択して保存
+5. 作成したコマンドは`/{userId}/{command-slug}`でアクセス可能
+6. 他のユーザーはコマンドをコピーして`.claude/commands`に配置して使用
+
+## デプロイ
+
+Vercelを使用したデプロイ：
+
+1. Vercelにプロジェクトをインポート
+2. 環境変数を設定
+3. デプロイ
+
+## ライセンス
+
+MIT
