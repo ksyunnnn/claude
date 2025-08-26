@@ -181,9 +181,45 @@ For complete step-by-step instructions, see:
 - **v1.1.0** (2025-01-26): Apple-style favicon + ADR system
 - **v1.0.0**: Initial application release
 
+## 🔍 Documentation Update Automation
+
+### IMPORTANT: Automatic Documentation Updates
+When implementing changes, Claude MUST automatically check and update documentation as follows:
+
+#### High Priority Changes (Mandatory Updates)
+- **New pages/features**: `src/app/*/page.tsx` creation → Update README.md "Key Features" + usage instructions
+- **Package dependencies**: `package.json` changes → Update README.md "Technology Stack" section
+- **Database changes**: `supabase/migrations/` → Update README.md database design + RLS explanations
+- **New UI components**: Major `src/components/` additions → Update README.md architecture details
+
+#### Medium Priority Changes (Recommended Updates)
+- **Configuration changes**: `next.config.ts`, `middleware.ts` → Update relevant sections
+- **New Server Actions**: `src/lib/actions/` → Update architecture patterns explanation
+- **Routing changes**: New directories in `src/app/` → Update URL structure documentation
+
+#### Update Process
+1. **Detect**: Automatically identify changes requiring documentation updates
+2. **Analyze**: Determine which sections need modification
+3. **Propose**: Present specific update suggestions to user
+4. **Execute**: Update documentation after user approval
+
+#### Target Documents
+- **README.md**: Features, tech stack, setup instructions, architecture details
+- **CLAUDE.md**: Architecture overview, development commands, project structure
+- **docs/adr/README.md**: ADR list updates when new ADRs are created
+
+### Documentation Sync Commands
+```bash
+# When implementing changes, always run:
+# 1. Check if documentation needs updates
+# 2. Propose specific changes
+# 3. Update after confirmation
+```
+
 ## Work History
 - 2025-08-21: Project initialization, initial setup
 - 2025-08-21: Slidev sample environment setup (sample directory)
 - 2025-01-26: Logo/favicon design implementation with Apple-style flat design (v1.1.0)
 - 2025-01-26: ADR system implementation for decision tracking
 - 2025-01-26: Release process documentation and standardization
+- 2025-08-26: Documentation update automation system implementation
