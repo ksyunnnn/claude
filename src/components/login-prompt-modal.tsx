@@ -8,8 +8,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { Heart, LogIn } from 'lucide-react'
-import Link from 'next/link'
+import { Heart, LogIn, Github } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 interface LoginPromptModalProps {
   isOpen: boolean
@@ -63,11 +63,21 @@ export function LoginPromptModal({ isOpen, onOpenChange, actionType = 'like' }: 
         </DialogHeader>
         
         <div className="mt-6 space-y-3">
-          <Button asChild className="w-full" size="lg">
-            <Link href="/auth/login">
-              <LogIn className="mr-2 h-4 w-4" />
-              Sign in with GitHub
-            </Link>
+          <Button 
+            className="w-full" 
+            size="lg"
+            onClick={async () => {
+              const supabase = createClient()
+              await supabase.auth.signInWithOAuth({
+                provider: 'github',
+                options: {
+                  redirectTo: `${window.location.origin}/auth/callback`,
+                },
+              })
+            }}
+          >
+            <Github className="mr-2 h-4 w-4" />
+            Sign in with GitHub
           </Button>
           
           <Button 
