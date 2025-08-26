@@ -70,6 +70,26 @@ export type Database = {
           updated_at?: string
         }
       }
+      follows: {
+        Row: {
+          id: string
+          follower_id: string
+          following_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          follower_id: string
+          following_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          follower_id?: string
+          following_id?: string
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -83,5 +103,28 @@ export type Database = {
     CompositeTypes: {
       [_ in never]: never
     }
+  }
+}
+
+// Helper types for follow relationships
+export type FollowerWithProfile = {
+  follower_id: string
+  created_at: string
+  profiles: {
+    id: string
+    username: string | null
+    full_name: string | null
+    avatar_url: string | null
+  }
+}
+
+export type FollowingWithProfile = {
+  following_id: string
+  created_at: string
+  profiles: {
+    id: string
+    username: string | null
+    full_name: string | null
+    avatar_url: string | null
   }
 }
