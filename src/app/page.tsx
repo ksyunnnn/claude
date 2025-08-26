@@ -63,7 +63,7 @@ export default async function Home() {
           </h1>
           <p className="text-muted-foreground text-lg">
             Discover and share custom slash commands for Claude Code. 
-            Enhance your development workflow with community-created commands.
+            Enhance your development workflow with community-created commands. 
           </p>
         </div>
 
