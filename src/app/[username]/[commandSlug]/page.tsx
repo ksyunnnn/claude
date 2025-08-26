@@ -9,6 +9,7 @@ import { LikeButton } from '@/components/like-button'
 import { LikedUsersModal } from '@/components/liked-users-modal'
 import { getLikeCount, getLikeStatus, getLikedUsers } from '@/lib/actions/like-actions'
 import { isAuthenticated } from '@/lib/auth-utils'
+import { LikeErrorHandler } from '@/components/like-error-handler'
 
 interface CommandPageProps {
   params: Promise<{ username: string; commandSlug: string }>
@@ -51,7 +52,10 @@ export default async function CommandPage({ params }: CommandPageProps) {
   // Get like data for the command
   let likeCount = 0
   let userIsLiked = false
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let likedUsers: any[] = []
+  let hasLikeError = false
+  let likeErrorMessage = ''
   const userIsAuthenticated = await isAuthenticated()
   
   try {
@@ -59,8 +63,13 @@ export default async function CommandPage({ params }: CommandPageProps) {
     userIsLiked = user ? await getLikeStatus(command.id) : false
     likedUsers = await getLikedUsers(command.id)
   } catch (error) {
-    console.log('Like data fetch failed, using defaults:', error)
-    // Use default values for development when Supabase is not configured
+    hasLikeError = true
+    likeErrorMessage = 'いいね機能が一時的に利用できません'
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Like data fetch failed:', error)
+    }
+    // Use default values when error occurs
   }
 
   return (
@@ -133,6 +142,12 @@ export default async function CommandPage({ params }: CommandPageProps) {
           </ol>
         </div>
       </main>
+      
+      {/* Error handler for like functionality */}
+      <LikeErrorHandler 
+        hasError={hasLikeError}
+        errorMessage={likeErrorMessage}
+      />
     </div>
   )
 }
