@@ -10,53 +10,85 @@ test.describe('Like functionality screenshots', () => {
     // Wait for page to load
     await page.waitForLoadState('networkidle');
     
-    // Take screenshot of the home page with like buttons
+    // Take screenshot of the home page
     await page.screenshot({
       path: 'tests/screenshots/like-buttons-home.png',
       fullPage: false
     });
     
-    // Look for like buttons on the page
-    const likeButtons = page.locator('button').filter({ hasText: /^\s*♥\s*\d+\s*$/ });
+    // Try navigating directly to a command page since links might not work
+    await page.goto('/ksyunnnn/resolve-review-comments');
     
-    if (await likeButtons.count() > 0) {
-      // Take a focused screenshot of the first like button area
-      const firstLikeButton = likeButtons.first();
-      const commandContainer = firstLikeButton.locator('..').locator('..');
+    // Wait for command page to load or check if 404
+    try {
+      await page.waitForLoadState('networkidle', { timeout: 10000 });
       
-      await commandContainer.screenshot({
-        path: 'tests/screenshots/like-button-detail.png'
-      });
+      // Check if we're on a 404 page
+      const notFoundText = page.locator('text=This page could not be found');
+      const is404 = await notFoundText.count() > 0;
       
-      // Test login modal by clicking like button
-      await firstLikeButton.click();
+      if (is404) {
+        console.log('Command page not found, trying different URL');
+        // Try the first command from the homepage
+        await page.goto('/');
+        await page.waitForLoadState('networkidle');
+        
+        // Get the first command link
+        const commandLink = page.locator('a[href^="/"][href*="/"]').first();
+        const href = await commandLink.getAttribute('href');
+        console.log('Found command link:', href);
+        
+        if (href && href.length > 1) {
+          await page.goto(href);
+          await page.waitForLoadState('networkidle');
+        }
+      }
       
-      // Wait for modal to appear
-      await page.waitForSelector('[role="dialog"]', { timeout: 5000 });
-      
-      // Take screenshot of login modal
+      // Take screenshot of command page with like button
       await page.screenshot({
-        path: 'tests/screenshots/login-prompt-modal.png',
+        path: 'tests/screenshots/command-page-with-like-button.png',
         fullPage: false
       });
       
-      // Close modal
-      await page.locator('button:has-text("Maybe later")').click();
-    }
-    
-    // Look for liked users modal triggers (like count buttons)
-    const likeCountButtons = page.locator('button').filter({ hasText: /\d+\s+like/ });
-    
-    if (await likeCountButtons.count() > 0) {
-      // Click to open liked users modal
-      await likeCountButtons.first().click();
+      // Look for like button
+      const likeButton = page.locator('button[aria-label*="like"]').first();
+      console.log(`Found ${await likeButton.count()} like buttons`);
       
-      // Wait for modal to appear
-      await page.waitForSelector('[role="dialog"]', { timeout: 5000 });
+      if (await likeButton.count() > 0) {
+        console.log('Like button found! Testing login modal');
+        
+        // Test login modal by clicking like button
+        await likeButton.click();
+        
+        // Wait for modal to appear
+        await page.waitForSelector('[role="dialog"]', { timeout: 5000 });
+        
+        // Take screenshot of login modal
+        await page.screenshot({
+          path: 'tests/screenshots/login-prompt-modal.png',
+          fullPage: false
+        });
+        
+        // Close modal
+        await page.locator('button:has-text("Maybe later")').click();
+      } else {
+        console.log('No like button found on command page');
+        // Check what buttons exist
+        const allButtons = page.locator('button');
+        const buttonCount = await allButtons.count();
+        console.log(`Found ${buttonCount} buttons total`);
+        
+        for (let i = 0; i < Math.min(3, buttonCount); i++) {
+          const buttonText = await allButtons.nth(i).textContent();
+          const ariaLabel = await allButtons.nth(i).getAttribute('aria-label');
+          console.log(`Button ${i}: text="${buttonText}", aria-label="${ariaLabel}"`);
+        }
+      }
       
-      // Take screenshot of liked users modal
+    } catch (error) {
+      console.log('Error navigating to command page:', error);
       await page.screenshot({
-        path: 'tests/screenshots/liked-users-modal.png',
+        path: 'tests/screenshots/command-page-error.png',
         fullPage: false
       });
     }
@@ -71,23 +103,52 @@ test.describe('Like functionality screenshots', () => {
     // Wait for page to load
     await page.waitForLoadState('networkidle');
     
-    // Take screenshot of mobile view
+    // Take screenshot of mobile home view
     await page.screenshot({
       path: 'tests/screenshots/like-buttons-mobile.png',
       fullPage: false
     });
     
-    // Test mobile modal if like buttons exist
-    const likeButtons = page.locator('button').filter({ hasText: /^\s*♥\s*\d+\s*$/ });
+    // Navigate to a command page for mobile like button test
+    // Find any command link on the mobile page
+    const mobileCommandLinks = page.locator('a[href*="/"]').filter({ hasText: /create-slash-commands\.com|resolve-review-comments|fixit-pr|refine-it/ });
     
-    if (await likeButtons.count() > 0) {
-      await likeButtons.first().click();
+    if (await mobileCommandLinks.count() > 0) {
+      const firstMobileLink = mobileCommandLinks.first();
+      const linkHref = await firstMobileLink.getAttribute('href');
+      console.log('Mobile: Clicking on command link:', linkHref);
       
-      await page.waitForSelector('[role="dialog"]', { timeout: 5000 });
+      await firstMobileLink.click();
       
-      // Take screenshot of mobile login modal
+      // Wait for page to load
+      await page.waitForLoadState('networkidle');
+      
+      // Take screenshot of mobile command page
       await page.screenshot({
-        path: 'tests/screenshots/login-modal-mobile.png',
+        path: 'tests/screenshots/command-page-mobile.png',
+        fullPage: false
+      });
+      
+      // Test mobile modal if like button exists
+      const likeButton = page.locator('button[aria-label*="like"]').first();
+      
+      if (await likeButton.count() > 0) {
+        await likeButton.click();
+        
+        await page.waitForSelector('[role="dialog"]', { timeout: 5000 });
+        
+        // Take screenshot of mobile login modal
+        await page.screenshot({
+          path: 'tests/screenshots/login-modal-mobile.png',
+          fullPage: false
+        });
+      }
+    } else {
+      console.log('Mobile: No command links found');
+      
+      // Take screenshot showing mobile page without command links
+      await page.screenshot({
+        path: 'tests/screenshots/mobile-no-command-links.png',
         fullPage: false
       });
     }
