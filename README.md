@@ -294,6 +294,83 @@ create policy "Users can follow others"
 - **RLS ポリシー**: 本番データでのポリシー動作確認
 - **パフォーマンス監視**: Vercel Analyticsでの監視設定
 
+## デザインシステム
+
+### ブランドアイデンティティ
+
+Claude Commandsのロゴ・ファビコンは、サービスのコンセプトを表現した独自デザインを採用しています：
+
+- **コンセプト**: コマンドプロンプトの象徴である「>`」をモダンに解釈
+- **デザイン手法**: ダブルシェブロン（`>>`）による立体感と奥行き表現
+- **スタイル**: Appleライクなフラットデザイン、ミニマリズム
+- **カラー**: ダークグレー（#4B5563）による落ち着いた品のある印象
+
+### 技術的実装
+
+#### Next.js ImageResponseによる動的ファビコン生成
+
+静的SVGファイルではなく、Next.js 15のImageResponse APIを使用したプログラマティック生成を採用：
+
+```typescript
+// src/app/icon.tsx
+import { ImageResponse } from 'next/og'
+
+export const size = { width: 32, height: 32 }
+export const contentType = 'image/png'
+
+export default function Icon() {
+  return new ImageResponse(/* ダブルシェブロンデザイン */)
+}
+```
+
+**採用理由**：
+- 動的調整可能（色調・サイズ変更が容易）
+- Next.js標準機能でメンテナンス性向上
+- TypeScriptによる型安全性
+- ビルドプロセスとの一体化
+
+**設計決定の詳細**: [ADR-0001: ファビコンデザインの技術選択](docs/adr/0001-favicon-design.md)
+
+## プロジェクト管理
+
+### アーキテクチャ決定記録（ADR）
+
+重要な技術的・設計的決定は [Architecture Decision Records](docs/adr/) で管理しています：
+
+- [ADR-0001: ファビコンデザインの技術選択](docs/adr/0001-favicon-design.md)
+- [ADR-0002: バージョン管理手法の採用](docs/adr/0002-version-management.md)
+
+ADRにより、なぜその技術や手法を選択したのかの理由と経緯を将来の開発者が理解できるよう文書化しています。
+
+### バージョン管理
+
+**セマンティックバージョニング**を採用：
+
+- **Major.Minor.Patch** 形式（例：v1.1.0）
+- **Major**: 破壊的変更（API変更、データスキーマ変更）
+- **Minor**: 新機能追加（後方互換性保持）
+- **Patch**: バグ修正、小規模改善
+
+**リリース管理**：
+
+```bash
+# Gitタグによるバージョン管理
+git tag -a v1.1.0 -m "Add Apple-style flat design favicon"
+git push origin v1.1.0
+
+# GitHub Releasesで自動リリースノート生成
+```
+
+### 技術決定プロセス
+
+新しい技術的決定は以下のプロセスで管理：
+
+1. **調査・検討**: 複数の選択肢を比較検討
+2. **ADR作成**: 決定内容と理由を文書化
+3. **レビュー**: 重要な決定はPRでレビュー実施
+4. **実装**: 決定に基づく実装実行
+5. **追跡**: 決定の結果と影響を継続監視
+
 ## 今後の拡張予定
 
 - [ ] コマンド検索・フィルタリング機能
@@ -301,6 +378,7 @@ create policy "Users can follow others"
 - [ ] コメント・レーティング機能
 - [ ] API エンドポイント公開
 - [ ] 多言語対応
+- [ ] OGP画像の自動生成（ファビコンデザイン連携）
 
 ## ライセンス
 
