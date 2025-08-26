@@ -141,6 +141,7 @@ src/
 All major design and technical decisions are documented in [Architecture Decision Records (ADR)](docs/adr/):
 - [ADR-0001: Favicon Design Technology Choice](docs/adr/0001-favicon-design.md)
 - [ADR-0002: Version Management Approach](docs/adr/0002-version-management.md)
+- [ADR-0003: GitHub Releases Release Process](docs/adr/0003-release-process.md)
 
 ## Version Management
 
@@ -151,16 +152,38 @@ All major design and technical decisions are documented in [Architecture Decisio
 - **ADR System**: Documentation of architectural decisions
 
 ### Release Process
-```bash
-# Create version tag
-git tag -a v1.1.0 -m "Add Apple-style flat design favicon"
-git push origin v1.1.0
 
-# GitHub Releases automatically creates release page
+#### Quick Release Steps
+```bash
+# 1. Pre-release checks
+npm run lint && npm run build
+
+# 2. Commit changes (Japanese message)
+git add [files]
+git commit -m "新機能: [brief description]"
+
+# 3. Create version tag (English message)
+git tag -a v1.2.0 -m "Brief description of changes"
+
+# 4. Push to remote
+git push origin main --tags
+
+# 5. Create GitHub Release manually from tags page
 ```
+
+#### Detailed Process
+For complete step-by-step instructions, see:
+- [RELEASE.md](RELEASE.md) - Comprehensive release guide
+- [ADR-0003: Release Process](docs/adr/0003-release-process.md) - Technical decision rationale
+- [Release Template](.github/release-template.md) - GitHub Release template
+
+#### Version Examples
+- **v1.1.0** (2025-01-26): Apple-style favicon + ADR system
+- **v1.0.0**: Initial application release
 
 ## Work History
 - 2025-08-21: Project initialization, initial setup
 - 2025-08-21: Slidev sample environment setup (sample directory)
-- 2025-01-26: Logo/favicon design implementation with Apple-style flat design
+- 2025-01-26: Logo/favicon design implementation with Apple-style flat design (v1.1.0)
 - 2025-01-26: ADR system implementation for decision tracking
+- 2025-01-26: Release process documentation and standardization
