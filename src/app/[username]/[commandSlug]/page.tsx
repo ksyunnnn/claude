@@ -49,10 +49,19 @@ export default async function CommandPage({ params }: CommandPageProps) {
   const authorName = command.profiles?.full_name || command.profiles?.username || 'Anonymous'
 
   // Get like data for the command
-  const likeCount = await getLikeCount(command.id)
-  const userIsLiked = user ? await getLikeStatus(command.id) : false
-  const likedUsers = await getLikedUsers(command.id)
+  let likeCount = 0
+  let userIsLiked = false
+  let likedUsers: any[] = []
   const userIsAuthenticated = await isAuthenticated()
+  
+  try {
+    likeCount = await getLikeCount(command.id)
+    userIsLiked = user ? await getLikeStatus(command.id) : false
+    likedUsers = await getLikedUsers(command.id)
+  } catch (error) {
+    console.log('Like data fetch failed, using defaults:', error)
+    // Use default values for development when Supabase is not configured
+  }
 
   return (
     <div className="min-h-screen">
@@ -77,7 +86,7 @@ export default async function CommandPage({ params }: CommandPageProps) {
                 by <Link href={`/${username}`} className="hover:underline">{authorName}</Link>
               </p>
               
-              {/* Like functionality */}
+              {/* Like functionality - Always visible for all users */}
               <div className="flex items-center gap-4 mt-4">
                 <LikeButton 
                   commandId={command.id}
@@ -85,12 +94,10 @@ export default async function CommandPage({ params }: CommandPageProps) {
                   initialLikeCount={likeCount}
                   isAuthenticated={userIsAuthenticated}
                 />
-                {likeCount > 0 && (
-                  <LikedUsersModal 
-                    likedUsers={likedUsers}
-                    likeCount={likeCount}
-                  />
-                )}
+                <LikedUsersModal 
+                  likedUsers={likedUsers}
+                  likeCount={likeCount}
+                />
               </div>
             </div>
             {isOwner && (

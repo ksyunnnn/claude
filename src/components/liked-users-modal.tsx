@@ -32,8 +32,13 @@ interface LikedUsersModalProps {
 export function LikedUsersModal({ likedUsers, likeCount }: LikedUsersModalProps) {
   const [isOpen, setIsOpen] = useState(false)
 
+  // Always show the modal trigger, but update text based on like count
   if (likeCount === 0) {
-    return null
+    return (
+      <span className="text-sm text-muted-foreground">
+        No likes yet
+      </span>
+    )
   }
 
   return (
