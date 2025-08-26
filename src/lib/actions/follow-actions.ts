@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { getUserById } from '@/lib/user-utils'
 
 export async function followUser(followingId: string) {
   const supabase = await createClient()
@@ -40,7 +41,20 @@ export async function followUser(followingId: string) {
     return { success: false, error: 'Failed to follow user' }
   }
 
-  // Revalidate relevant pages
+  // Get usernames for revalidation
+  const followingUser = await getUserById(followingId)
+  const currentUser = await getUserById(user.id)
+
+  // Revalidate relevant pages (username-based)
+  if (followingUser?.username) {
+    revalidatePath(`/${followingUser.username}`)
+    revalidatePath(`/${followingUser.username}/followers`)
+  }
+  if (currentUser?.username) {
+    revalidatePath(`/${currentUser.username}/following`)
+  }
+  
+  // Also revalidate ID-based paths for compatibility
   revalidatePath(`/${followingId}`)
   revalidatePath(`/${user.id}/following`)
   revalidatePath(`/${followingId}/followers`)
@@ -70,7 +84,20 @@ export async function unfollowUser(followingId: string) {
     return { success: false, error: 'Failed to unfollow user' }
   }
 
-  // Revalidate relevant pages
+  // Get usernames for revalidation
+  const followingUser = await getUserById(followingId)
+  const currentUser = await getUserById(user.id)
+
+  // Revalidate relevant pages (username-based)
+  if (followingUser?.username) {
+    revalidatePath(`/${followingUser.username}`)
+    revalidatePath(`/${followingUser.username}/followers`)
+  }
+  if (currentUser?.username) {
+    revalidatePath(`/${currentUser.username}/following`)
+  }
+  
+  // Also revalidate ID-based paths for compatibility
   revalidatePath(`/${followingId}`)
   revalidatePath(`/${user.id}/following`)
   revalidatePath(`/${followingId}/followers`)

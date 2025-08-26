@@ -10,6 +10,14 @@ export default async function NewCommandPage() {
     redirect('/')
   }
 
+  // Get user profile to get username
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: profile } = await (supabase as any)
+    .from('profiles')
+    .select('username')
+    .eq('id', user.id)
+    .single()
+
   return (
     <div className="min-h-screen">
       <header className="border-b">
@@ -19,7 +27,7 @@ export default async function NewCommandPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <CommandForm userId={user.id} />
+        <CommandForm userId={user.id} username={profile?.username} />
       </main>
     </div>
   )

@@ -13,9 +13,10 @@ import Link from 'next/link'
 
 interface CommandFormProps {
   userId: string
+  username: string | null
 }
 
-export function CommandForm({ userId }: CommandFormProps) {
+export function CommandForm({ userId, username }: CommandFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -61,7 +62,8 @@ export function CommandForm({ userId }: CommandFormProps) {
         return
       }
 
-      router.push(`/${userId}/${slug}`)
+      const profilePath = username || userId
+      router.push(`/${profilePath}/${slug}`)
       router.refresh()
     } catch (error) {
       console.error('Error creating command:', error)
@@ -90,7 +92,7 @@ export function CommandForm({ userId }: CommandFormProps) {
             className="mt-1"
           />
           <p className="text-sm text-muted-foreground mt-1">
-            This will be used in the URL as: /{userId}/{generateSlug(formData.name) || 'command-name'}
+            This will be used in the URL as: /{username || userId}/{generateSlug(formData.name) || 'command-name'}
           </p>
         </div>
 

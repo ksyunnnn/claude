@@ -4,24 +4,20 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { getFollowers } from '@/lib/actions/follow-actions'
 import FollowButton from '@/components/follow-button'
+import { getUserByUsername } from '@/lib/user-utils'
 import type { FollowerWithProfile } from '@/types/supabase'
 
 interface FollowersPageProps {
-  params: Promise<{ userId: string }>
+  params: Promise<{ username: string }>
 }
 
 export default async function FollowersPage({ params }: FollowersPageProps) {
-  const { userId } = await params
+  const { username } = await params
   const supabase = await createClient()
 
-  // Check if user exists
-  const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('id, username, full_name, avatar_url')
-    .eq('id', userId)
-    .single() as { data: { id: string; username: string | null; full_name: string | null; avatar_url: string | null } | null; error: Error | null }
-
-  if (profileError || !profile) {
+  // Get user profile by username
+  const profile = await getUserByUsername(username)
+  if (!profile) {
     notFound()
   }
 
@@ -29,7 +25,7 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
   const { data: { user: currentUser } } = await supabase.auth.getUser()
 
   // Get followers
-  const followers = await getFollowers(userId)
+  const followers = await getFollowers(profile.id)
 
   return (
     <div className="min-h-screen bg-background">
@@ -38,7 +34,7 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <Link
-              href={`/${userId}`}
+              href={`/${username}`}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               ← Back to profile
@@ -82,7 +78,7 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
                   className="flex items-center justify-between p-4 border rounded-lg bg-card"
                 >
                   <Link
-                    href={`/${followerProfile.id}`}
+                    href={`/${followerProfile.username || followerProfile.id}`}
                     className="flex items-center gap-3 flex-1 hover:opacity-80 transition-opacity"
                   >
                     {followerProfile.avatar_url && (

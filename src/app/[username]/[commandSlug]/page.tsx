@@ -3,16 +3,24 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Edit } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { CommandActions } from './command-actions'
+import { CommandActions } from '@/components/command-actions'
+import { getUserByUsername } from '@/lib/user-utils'
 
 interface CommandPageProps {
-  params: Promise<{ userId: string; commandSlug: string }>
+  params: Promise<{ username: string; commandSlug: string }>
 }
 
 export default async function CommandPage({ params }: CommandPageProps) {
-  const { userId, commandSlug } = await params
+  const { username, commandSlug } = await params
   const supabase = await createClient()
   
+  // Get user profile by username
+  const profile = await getUserByUsername(username)
+  if (!profile) {
+    notFound()
+  }
+
+  const userId = profile.id
   const { data: { user } } = await supabase.auth.getUser()
   const isOwner = user?.id === userId
 
@@ -40,7 +48,7 @@ export default async function CommandPage({ params }: CommandPageProps) {
     <div className="min-h-screen">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4">
-          <Link href={`/${userId}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <Link href={`/${username}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
             Back to {authorName}&apos;s commands
           </Link>
@@ -56,12 +64,12 @@ export default async function CommandPage({ params }: CommandPageProps) {
                 <p className="text-muted-foreground">{command.description}</p>
               )}
               <p className="text-sm text-muted-foreground mt-2">
-                by <Link href={`/${userId}`} className="hover:underline">{authorName}</Link>
+                by <Link href={`/${username}`} className="hover:underline">{authorName}</Link>
               </p>
             </div>
             {isOwner && (
               <div className="flex gap-2">
-                <Link href={`/${userId}/${commandSlug}/edit`}>
+                <Link href={`/${username}/${commandSlug}/edit`}>
                   <Button variant="outline" size="sm">
                     <Edit className="h-4 w-4 mr-1" />
                     Edit

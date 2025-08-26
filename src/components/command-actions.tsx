@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Copy, Check } from 'lucide-react'
+import { Copy } from 'lucide-react'
 
 interface CommandActionsProps {
   content: string
@@ -26,19 +26,10 @@ export function CommandActions({ content }: CommandActionsProps) {
       variant="outline"
       size="sm"
       onClick={handleCopy}
-      className="transition-all"
+      className="gap-1"
     >
-      {copied ? (
-        <>
-          <Check className="h-4 w-4 mr-1" />
-          Copied!
-        </>
-      ) : (
-        <>
-          <Copy className="h-4 w-4 mr-1" />
-          Copy
-        </>
-      )}
+      <Copy className="h-3 w-3" />
+      {copied ? 'Copied!' : 'Copy'}
     </Button>
   )
 }

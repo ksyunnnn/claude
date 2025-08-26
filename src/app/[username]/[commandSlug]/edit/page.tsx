@@ -1,15 +1,23 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
-import { EditCommandForm } from './edit-command-form'
+import { EditCommandForm } from '@/components/edit-command-form'
+import { getUserByUsername } from '@/lib/user-utils'
 
 interface EditCommandPageProps {
-  params: Promise<{ userId: string; commandSlug: string }>
+  params: Promise<{ username: string; commandSlug: string }>
 }
 
 export default async function EditCommandPage({ params }: EditCommandPageProps) {
-  const { userId, commandSlug } = await params
+  const { username, commandSlug } = await params
   const supabase = await createClient()
   
+  // Get user profile by username
+  const profile = await getUserByUsername(username)
+  if (!profile) {
+    notFound()
+  }
+
+  const userId = profile.id
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user || user.id !== userId) {
@@ -37,7 +45,7 @@ export default async function EditCommandPage({ params }: EditCommandPageProps) 
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <EditCommandForm command={command} />
+        <EditCommandForm command={command} username={username} />
       </main>
     </div>
   )

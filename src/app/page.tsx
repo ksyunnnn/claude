@@ -9,6 +9,18 @@ export default async function Home() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  // Get user profile to get username
+  let profile = null
+  if (user) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data } = await (supabase as any)
+      .from('profiles')
+      .select('username')
+      .eq('id', user.id)
+      .single()
+    profile = data
+  }
+
   return (
     <div className="min-h-screen">
       <header className="border-b">
@@ -26,7 +38,7 @@ export default async function Home() {
                     New Command
                   </Button>
                 </Link>
-                <Link href={`/${user.id}`}>
+                <Link href={`/${profile?.username || user.id}`}>
                   <Button variant="ghost" size="sm">
                     My Commands
                   </Button>

@@ -5,28 +5,25 @@ import Image from 'next/image'
 import { ArrowLeft, Code2, Lock, Globe, Users } from 'lucide-react'
 import FollowButton from '@/components/follow-button'
 import { getFollowStatus, getFollowCounts } from '@/lib/actions/follow-actions'
+import { getUserByUsername } from '@/lib/user-utils'
 
 interface UserPageProps {
-  params: Promise<{ userId: string }>
+  params: Promise<{ username: string }>
 }
 
 export default async function UserPage({ params }: UserPageProps) {
-  const { userId } = await params
+  const { username } = await params
   const supabase = await createClient()
   
-  const { data: { user } } = await supabase.auth.getUser()
-  const isOwnProfile = user?.id === userId
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase as any)
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single()
-
+  // Get user profile by username
+  const profile = await getUserByUsername(username)
   if (!profile) {
     notFound()
   }
+
+  const userId = profile.id
+  const { data: { user } } = await supabase.auth.getUser()
+  const isOwnProfile = user?.id === userId
 
   // Get follow status and counts
   const isFollowing = user ? await getFollowStatus(userId) : false
@@ -47,6 +44,7 @@ export default async function UserPage({ params }: UserPageProps) {
   
   // Debug logging
   console.log('Debug info:')
+  console.log('username:', username)
   console.log('userId:', userId)
   console.log('isOwnProfile:', isOwnProfile)
   console.log('commands:', commands)
@@ -96,7 +94,7 @@ export default async function UserPage({ params }: UserPageProps) {
           {/* Follow stats */}
           <div className="flex items-center gap-6 text-sm">
             <Link
-              href={`/${userId}/followers`}
+              href={`/${username}/followers`}
               className="flex items-center gap-1 hover:underline"
             >
               <Users className="h-4 w-4" />
@@ -104,7 +102,7 @@ export default async function UserPage({ params }: UserPageProps) {
               <span className="text-muted-foreground">follower{followers !== 1 ? 's' : ''}</span>
             </Link>
             <Link
-              href={`/${userId}/following`}
+              href={`/${username}/following`}
               className="flex items-center gap-1 hover:underline"
             >
               <span className="font-semibold">{following}</span>
@@ -121,7 +119,7 @@ export default async function UserPage({ params }: UserPageProps) {
               commands.map((command: any) => (
                 <Link
                   key={command.id}
-                  href={`/${userId}/${command.slug}`}
+                  href={`/${username}/${command.slug}`}
                   className="block border rounded-lg p-4 hover:bg-accent transition-colors"
                 >
                   <div className="flex items-start justify-between">

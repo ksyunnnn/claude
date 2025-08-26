@@ -34,11 +34,12 @@ export async function CommandList() {
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       {commands.map((command: any) => {
         const authorName = command.profiles?.full_name || command.profiles?.username || 'Anonymous'
+        const profilePath = command.profiles?.username || command.user_id
         
         return (
           <Link
             key={command.id}
-            href={`/${command.user_id}/${command.slug}`}
+            href={`/${profilePath}/${command.slug}`}
             className="block border rounded-lg p-4 hover:bg-accent transition-colors"
           >
             <div className="flex items-start justify-between">

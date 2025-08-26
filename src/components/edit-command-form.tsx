@@ -8,25 +8,27 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { ArrowLeft, Trash2 } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
-interface EditCommandFormProps {
-  command: {
-    id: string
-    user_id: string
-    name: string
-    slug: string
-    description: string | null
-    content: string
-    is_public: boolean
-  }
+interface Command {
+  id: string
+  user_id: string
+  name: string
+  slug: string
+  description: string | null
+  content: string
+  is_public: boolean
 }
 
-export function EditCommandForm({ command }: EditCommandFormProps) {
+interface EditCommandFormProps {
+  command: Command
+  username?: string | null
+}
+
+export function EditCommandForm({ command, username }: EditCommandFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [deleting, setDeleting] = useState(false)
   const [formData, setFormData] = useState({
     name: command.name,
     description: command.description || '',
@@ -34,27 +36,18 @@ export function EditCommandForm({ command }: EditCommandFormProps) {
     isPublic: command.is_public,
   })
 
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     try {
       const supabase = createClient()
-      const newSlug = generateSlug(formData.name)
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any)
         .from('commands')
         .update({
           name: formData.name,
-          slug: newSlug,
           description: formData.description || null,
           content: formData.content,
           is_public: formData.isPublic,
@@ -62,16 +55,12 @@ export function EditCommandForm({ command }: EditCommandFormProps) {
         .eq('id', command.id)
 
       if (error) {
-        if (error.code === '23505') {
-          alert('You already have another command with this name')
-        } else {
-          throw error
-        }
-        return
+        throw error
       }
 
-      router.push(`/${command.user_id}/${newSlug}`)
+      router.back()
       router.refresh()
+      alert('Command updated successfully')
     } catch (error) {
       console.error('Error updating command:', error)
       alert('Failed to update command')
@@ -81,11 +70,11 @@ export function EditCommandForm({ command }: EditCommandFormProps) {
   }
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this command?')) {
+    if (!confirm('Are you sure you want to delete this command? This action cannot be undone.')) {
       return
     }
 
-    setDeleting(true)
+    setLoading(true)
 
     try {
       const supabase = createClient()
@@ -96,24 +85,25 @@ export function EditCommandForm({ command }: EditCommandFormProps) {
         .delete()
         .eq('id', command.id)
 
-      if (error) throw error
+      if (error) {
+        throw error
+      }
 
-      router.push(`/${command.user_id}`)
+      const profilePath = username || command.user_id
+      router.push(`/${profilePath}`)
       router.refresh()
+      alert('Command deleted successfully')
     } catch (error) {
       console.error('Error deleting command:', error)
       alert('Failed to delete command')
     } finally {
-      setDeleting(false)
+      setLoading(false)
     }
   }
 
   return (
     <>
-      <Link 
-        href={`/${command.user_id}/${command.slug}`} 
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6"
-      >
+      <Link href={`/${username || command.user_id}/${command.slug}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="h-4 w-4" />
         Back to command
       </Link>
@@ -128,15 +118,13 @@ export function EditCommandForm({ command }: EditCommandFormProps) {
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="mt-1"
           />
-          <p className="text-sm text-muted-foreground mt-1">
-            URL will be: /{command.user_id}/{generateSlug(formData.name) || 'command-name'}
-          </p>
         </div>
 
         <div>
           <Label htmlFor="description">Description (Optional)</Label>
           <Input
             id="description"
+            placeholder="Brief description of what this command does"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             className="mt-1"
@@ -167,28 +155,15 @@ export function EditCommandForm({ command }: EditCommandFormProps) {
           </div>
         </div>
 
-        <div className="flex gap-4 justify-between">
-          <div className="flex gap-4">
-            <Button type="submit" disabled={loading || deleting}>
-              {loading ? 'Saving...' : 'Save Changes'}
-            </Button>
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => router.back()}
-              disabled={loading || deleting}
-            >
-              Cancel
-            </Button>
-          </div>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={loading || deleting}
-          >
-            <Trash2 className="h-4 w-4 mr-1" />
-            {deleting ? 'Deleting...' : 'Delete'}
+        <div className="flex gap-4">
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Saving...' : 'Save Changes'}
+          </Button>
+          <Button type="button" variant="outline" onClick={() => router.back()}>
+            Cancel
+          </Button>
+          <Button type="button" variant="destructive" onClick={handleDelete} disabled={loading}>
+            Delete Command
           </Button>
         </div>
       </form>
