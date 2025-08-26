@@ -26,12 +26,24 @@ export default async function UserPage({ params }: UserPageProps) {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: commands } = await (supabase as any)
+  let commandsQuery = (supabase as any)
     .from('commands')
     .select('*')
     .eq('user_id', userId)
-    .eq('is_public', isOwnProfile ? undefined : true)
-    .order('created_at', { ascending: false })
+  
+  // If not own profile, only show public commands
+  if (!isOwnProfile) {
+    commandsQuery = commandsQuery.eq('is_public', true)
+  }
+  
+  const { data: commands, error } = await commandsQuery.order('created_at', { ascending: false })
+  
+  // Debug logging
+  console.log('Debug info:')
+  console.log('userId:', userId)
+  console.log('isOwnProfile:', isOwnProfile)
+  console.log('commands:', commands)
+  console.log('error:', error)
 
   return (
     <div className="min-h-screen">
