@@ -45,14 +45,50 @@ test.describe('Like functionality', () => {
     // - Close modal and verify it closes
   });
 
-  test.skip('should require authentication for liking', async ({ page }) => {
-    // Skip this test until authentication is properly set up in tests
-    
+  test('should show login prompt for unauthenticated users', async ({ page }) => {
     await page.goto('/');
     
-    // Future test implementation:
-    // - Navigate to a command page while not authenticated
-    // - Click like button
-    // - Verify user is redirected to login page
+    // Look for like buttons on the page
+    const likeButtons = page.locator('button[aria-label*="Sign in to like"]');
+    
+    if (await likeButtons.count() > 0) {
+      // Click the first like button
+      await likeButtons.first().click();
+      
+      // Verify login modal appears
+      await expect(page.locator('[role="dialog"]')).toBeVisible();
+      await expect(page.locator('text=Sign in to like commands')).toBeVisible();
+      await expect(page.locator('text=Sign in with GitHub')).toBeVisible();
+      
+      // Test modal close functionality
+      await page.locator('button:has-text("Maybe later")').click();
+      await expect(page.locator('[role="dialog"]')).not.toBeVisible();
+    } else {
+      // Skip if no commands with like buttons are present
+      test.skip();
+    }
+  });
+
+  test('should display like count and users modal for unauthenticated users', async ({ page }) => {
+    await page.goto('/');
+    
+    // Look for liked users buttons (showing like count)
+    const likeCountButtons = page.locator('button:has-text(" like")');
+    
+    if (await likeCountButtons.count() > 0) {
+      // Click to open liked users modal
+      await likeCountButtons.first().click();
+      
+      // Verify modal opens
+      await expect(page.locator('[role="dialog"]')).toBeVisible();
+      await expect(page.locator('text=Liked by')).toBeVisible();
+      
+      // Close modal
+      await page.locator('[data-slot="dialog-close"]').click();
+      await expect(page.locator('[role="dialog"]')).not.toBeVisible();
+    } else {
+      // Skip if no commands with likes are present
+      test.skip();
+    }
   });
 });

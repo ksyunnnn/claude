@@ -2,7 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 
 export async function likeCommand(commandId: string) {
   const supabase = await createClient()
@@ -10,7 +9,7 @@ export async function likeCommand(commandId: string) {
   // Get current user
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) {
-    redirect('/auth/login')
+    return { success: false, error: 'Authentication required', requiresAuth: true }
   }
 
   // Check if already liked
@@ -53,7 +52,7 @@ export async function unlikeCommand(commandId: string) {
   // Get current user
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) {
-    redirect('/auth/login')
+    return { success: false, error: 'Authentication required', requiresAuth: true }
   }
 
   // Delete like
