@@ -1,7 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Code2, Lock, Globe } from 'lucide-react'
+import Image from 'next/image'
+import { ArrowLeft, Code2, Lock, Globe, Users } from 'lucide-react'
+import FollowButton from '@/components/follow-button'
+import { getFollowStatus, getFollowCounts } from '@/lib/actions/follow-actions'
 
 interface UserPageProps {
   params: Promise<{ userId: string }>
@@ -24,6 +27,10 @@ export default async function UserPage({ params }: UserPageProps) {
   if (!profile) {
     notFound()
   }
+
+  // Get follow status and counts
+  const isFollowing = user ? await getFollowStatus(userId) : false
+  const { followers, following } = await getFollowCounts(userId)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let commandsQuery = (supabase as any)
@@ -58,12 +65,52 @@ export default async function UserPage({ params }: UserPageProps) {
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            {profile.full_name || profile.username || 'Anonymous User'}
-          </h1>
-          {profile.username && (
-            <p className="text-muted-foreground">@{profile.username}</p>
-          )}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-4">
+              {profile.avatar_url && (
+                <Image
+                  src={profile.avatar_url}
+                  alt={profile.full_name || profile.username || 'User'}
+                  width={64}
+                  height={64}
+                  className="w-16 h-16 rounded-full"
+                />
+              )}
+              <div>
+                <h1 className="text-3xl font-bold mb-2">
+                  {profile.full_name || profile.username || 'Anonymous User'}
+                </h1>
+                {profile.username && (
+                  <p className="text-muted-foreground">@{profile.username}</p>
+                )}
+              </div>
+            </div>
+            {user && !isOwnProfile && (
+              <FollowButton
+                userId={userId}
+                initialIsFollowing={isFollowing}
+              />
+            )}
+          </div>
+          
+          {/* Follow stats */}
+          <div className="flex items-center gap-6 text-sm">
+            <Link
+              href={`/${userId}/followers`}
+              className="flex items-center gap-1 hover:underline"
+            >
+              <Users className="h-4 w-4" />
+              <span className="font-semibold">{followers}</span>
+              <span className="text-muted-foreground">follower{followers !== 1 ? 's' : ''}</span>
+            </Link>
+            <Link
+              href={`/${userId}/following`}
+              className="flex items-center gap-1 hover:underline"
+            >
+              <span className="font-semibold">{following}</span>
+              <span className="text-muted-foreground">following</span>
+            </Link>
+          </div>
         </div>
 
         <div>
