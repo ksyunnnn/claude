@@ -2,8 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ProfileForm } from './profile-form'
 import { LogoutButton } from '@/components/auth/logout-button'
-import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { Navigation } from '@/components/navigation'
 
 export default async function SettingsPage() {
   const supabase = await createClient()
@@ -22,14 +21,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" />
-            Back to home
-          </Link>
-        </div>
-      </header>
+      <Navigation />
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-3xl font-bold mb-8">Settings</h1>

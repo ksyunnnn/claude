@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { CommandForm } from './command-form'
+import { Navigation } from '@/components/navigation'
 
 export default async function NewCommandPage() {
   const supabase = await createClient()
@@ -20,13 +21,10 @@ export default async function NewCommandPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold">Create New Command</h1>
-        </div>
-      </header>
+      <Navigation />
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
+        <h1 className="text-3xl font-bold mb-8">Create New Command</h1>
         <CommandForm userId={user.id} username={profile?.username} />
       </main>
     </div>
