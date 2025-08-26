@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import type { LikedUser } from '@/components/liked-users-modal'
 
 export async function likeCommand(commandId: string) {
   const supabase = await createClient()
@@ -104,7 +105,7 @@ export async function getLikeCount(commandId: string): Promise<number> {
   return count || 0
 }
 
-export async function getLikedUsers(commandId: string) {
+export async function getLikedUsers(commandId: string): Promise<LikedUser[]> {
   const supabase = await createClient()
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

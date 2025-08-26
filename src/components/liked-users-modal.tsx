@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Users } from 'lucide-react'
 import Link from 'next/link'
 
-interface LikedUser {
+export interface LikedUser {
   user_id: string
   created_at: string
   profiles: {

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { CommandActions } from '@/components/command-actions'
 import { getUserByUsername } from '@/lib/user-utils'
 import { LikeButton } from '@/components/like-button'
-import { LikedUsersModal } from '@/components/liked-users-modal'
+import { LikedUsersModal, type LikedUser } from '@/components/liked-users-modal'
 import { getLikeCount, getLikeStatus, getLikedUsers } from '@/lib/actions/like-actions'
 import { isAuthenticated } from '@/lib/auth-utils'
 import { LikeErrorHandler } from '@/components/like-error-handler'
@@ -52,8 +52,7 @@ export default async function CommandPage({ params }: CommandPageProps) {
   // Get like data for the command
   let likeCount = 0
   let userIsLiked = false
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let likedUsers: any[] = []
+  let likedUsers: LikedUser[] = []
   let hasLikeError = false
   let likeErrorMessage = ''
   const userIsAuthenticated = await isAuthenticated()
