@@ -5,6 +5,11 @@ import { ArrowLeft, Edit } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CommandActions } from '@/components/command-actions'
 import { getUserByUsername } from '@/lib/user-utils'
+import { LikeButton } from '@/components/like-button'
+import { LikedUsersModal, type LikedUser } from '@/components/liked-users-modal'
+import { getLikeCount, getLikeStatus, getLikedUsers } from '@/lib/actions/like-actions'
+import { isAuthenticated } from '@/lib/auth-utils'
+import { LikeErrorHandler } from '@/components/like-error-handler'
 
 interface CommandPageProps {
   params: Promise<{ username: string; commandSlug: string }>
@@ -44,6 +49,28 @@ export default async function CommandPage({ params }: CommandPageProps) {
 
   const authorName = command.profiles?.full_name || command.profiles?.username || 'Anonymous'
 
+  // Get like data for the command
+  let likeCount = 0
+  let userIsLiked = false
+  let likedUsers: LikedUser[] = []
+  let hasLikeError = false
+  let likeErrorMessage = ''
+  const userIsAuthenticated = await isAuthenticated()
+  
+  try {
+    likeCount = await getLikeCount(command.id)
+    userIsLiked = user ? await getLikeStatus(command.id) : false
+    likedUsers = await getLikedUsers(command.id)
+  } catch (error) {
+    hasLikeError = true
+    likeErrorMessage = 'いいね機能が一時的に利用できません'
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Like data fetch failed:', error)
+    }
+    // Use default values when error occurs
+  }
+
   return (
     <div className="min-h-screen">
       <header className="border-b">
@@ -66,6 +93,20 @@ export default async function CommandPage({ params }: CommandPageProps) {
               <p className="text-sm text-muted-foreground mt-2">
                 by <Link href={`/${username}`} className="hover:underline">{authorName}</Link>
               </p>
+              
+              {/* Like functionality - Always visible for all users */}
+              <div className="flex items-center gap-4 mt-4">
+                <LikeButton 
+                  commandId={command.id}
+                  initialIsLiked={userIsLiked}
+                  initialLikeCount={likeCount}
+                  isAuthenticated={userIsAuthenticated}
+                />
+                <LikedUsersModal 
+                  likedUsers={likedUsers}
+                  likeCount={likeCount}
+                />
+              </div>
             </div>
             {isOwner && (
               <div className="flex gap-2">
@@ -100,6 +141,12 @@ export default async function CommandPage({ params }: CommandPageProps) {
           </ol>
         </div>
       </main>
+      
+      {/* Error handler for like functionality */}
+      <LikeErrorHandler 
+        hasError={hasLikeError}
+        errorMessage={likeErrorMessage}
+      />
     </div>
   )
 }

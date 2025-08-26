@@ -49,3 +49,7 @@ temp/
 *.temp
 debug_*.sql
 fix_*.sql
+
+# Playwright
+test-results/
+playwright-report/
