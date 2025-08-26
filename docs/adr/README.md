@@ -29,11 +29,35 @@ NNNN-title-with-dashes.md
 
 - [ADR-0001: ファビコンデザインの技術選択](0001-favicon-design.md)
 - [ADR-0002: バージョン管理手法の採用](0002-version-management.md)
+- [ADR-0003: GitHub Releasesを使用したリリースプロセス](0003-release-process.md)
+- [ADR-0004: React 19 useOptimisticフックの採用](0004-react-use-optimistic.md)
+- [ADR-0005: Radix UI拡張戦略](0005-radix-ui-extension-strategy.md)
+
+## 自動化システム
+
+このプロジェクトでは、ADR管理の効率化のため**自動化システム**を導入しています：
+
+### 🤖 自動機能
+- **技術的変更の自動検出**: PRを分析してADR必要性を判定
+- **Issue自動作成**: 技術的決定が必要な場合に自動でIssue作成
+- **ADRドラフト自動生成**: Issueに基づいてADRドラフトとPRを自動生成
+
+詳細は [ADR自動化システム](../../.github/ADR-AUTOMATION.md) をご参照ください。
+
+### 利用方法
+1. **自動**: 技術的変更を含むPRを作成すると自動でIssueが作成される
+2. **手動**: [技術的決定テンプレート](../../.github/ISSUE_TEMPLATE/technical-decision.yml) から手動作成
+3. **ドラフト活用**: 自動生成されたADRドラフトを編集・完成
 
 ## 新しいADRの作成
 
-新しい技術的決定を記録する際は、以下の手順に従ってください：
+### 自動化された方法（推奨）
+1. 技術的変更を含むPRを作成
+2. 自動生成されるIssueとADRドラフトを確認
+3. ドラフトを編集・詳細化
+4. レビュー・マージ
 
+### 手動作成
 1. `template.md` をコピーして新しいファイルを作成
 2. 連番を確認して適切な番号を付与
 3. タイトルを決定内容に応じて設定
@@ -50,5 +74,11 @@ NNNN-title-with-dashes.md
 
 ## 参考資料
 
+### プロジェクト関連
+- [ADR自動化システム](../../.github/ADR-AUTOMATION.md)
+- [技術的決定テンプレート](../../.github/ISSUE_TEMPLATE/technical-decision.yml)
+- [リリースプロセス](../../RELEASE.md)
+
+### 外部資料
 - [Michael Nygard's ADR template](https://github.com/joelparkerhenderson/architecture_decision_record)
 - [ADR GitHub organization](https://adr.github.io/)

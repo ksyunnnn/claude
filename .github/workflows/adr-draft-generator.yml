@@ -1,0 +1,358 @@
+name: ADR Draft Generator
+description: Generate ADR drafts automatically based on technical decisions
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to generate ADR draft'
+        required: true
+        type: number
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  generate-adr-draft:
+    runs-on: ubuntu-latest
+    if: contains(github.event.label.name, 'needs-adr') || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get issue details
+        id: issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = github.event_name === 'workflow_dispatch' 
+              ? ${{ github.event.inputs.issue_number }}
+              : context.issue.number;
+
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber
+            });
+
+            return {
+              title: issue.title,
+              body: issue.body,
+              number: issue.number,
+              labels: issue.labels.map(label => label.name)
+            };
+
+      - name: Parse issue content
+        id: parse
+        run: |
+          # Issue から情報を抽出
+          ISSUE_DATA='${{ steps.issue.outputs.result }}'
+          
+          # 次のADR番号を決定
+          ADR_DIR="docs/adr"
+          NEXT_NUM=$(ls ${ADR_DIR}/*.md | grep -oE '[0-9]{4}' | sort -n | tail -1)
+          NEXT_NUM=$((NEXT_NUM + 1))
+          NEXT_ADR_NUM=$(printf "%04d" $NEXT_NUM)
+          
+          echo "next-adr-number=$NEXT_ADR_NUM" >> $GITHUB_OUTPUT
+          echo "issue-data=$ISSUE_DATA" >> $GITHUB_OUTPUT
+
+      - name: Generate ADR draft
+        id: generate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueData = JSON.parse('${{ steps.parse.outputs.issue-data }}');
+            const nextNumber = '${{ steps.parse.outputs.next-adr-number }}';
+            
+            // Issue内容から情報を抽出
+            const title = issueData.title.replace(/^\[ADR\]\s*/, '');
+            const body = issueData.body;
+            
+            // 決定種類を推定
+            let decisionType = "技術的決定";
+            if (body.includes("新しい技術・ライブラリの採用")) decisionType = "新しい技術・ライブラリの採用";
+            if (body.includes("データベース設計の変更")) decisionType = "データベース設計の変更";
+            if (body.includes("アーキテクチャの変更")) decisionType = "アーキテクチャの変更";
+            if (body.includes("UI/UX戦略の変更")) decisionType = "UI/UX戦略の変更";
+            
+            // PR番号を抽出
+            const prMatch = body.match(/PR.*#(\d+)/);
+            const prNumber = prMatch ? prMatch[1] : '';
+            
+            // パッケージ変更を抽出
+            const packageMatch = body.match(/## 📦 パッケージ変更\s*```diff\s*(.*?)\s*```/s);
+            const packageChanges = packageMatch ? packageMatch[1] : '';
+            
+            // 変更ファイルを抽出
+            const filesMatch = body.match(/## 📁 変更されたファイル\s*```\s*(.*?)\s*```/s);
+            const changedFiles = filesMatch ? filesMatch[1] : '';
+            
+            // ADRドラフトを生成
+            const adrContent = `# ADR-${nextNumber}: ${title}
+
+## Status
+
+Proposed
+
+## Context
+
+このADRは Issue #${issueData.number} に基づいて自動生成されました。
+
+### 背景
+${prNumber ? `PR #${prNumber}` : 'プルリクエスト'}における技術的変更により、以下の決定が必要になりました：
+
+**決定種類**: ${decisionType}
+
+### 変更されたファイル
+\`\`\`
+${changedFiles}
+\`\`\`
+
+${packageChanges ? `### パッケージ変更
+\`\`\`diff
+${packageChanges}
+\`\`\`` : ''}
+
+### 課題・制約
+<!-- ここに具体的な課題や制約を記載してください -->
+- 現在の技術的課題は何か？
+- どのような制約があるか？
+- ビジネス要件との関連は？
+
+## Decision
+
+<!-- ここに具体的な決定内容を記載してください -->
+
+**採用する解決策**: 
+
+**決定理由**:
+1. 
+2. 
+3. 
+
+### 検討した選択肢
+<!-- 他に検討した選択肢とその評価 -->
+- **選択肢A**: 
+  - メリット: 
+  - デメリット: 
+- **選択肢B**: 
+  - メリット: 
+  - デメリット: 
+
+## Consequences
+
+### Positive（メリット）
+
+- 
+
+### Negative（デメリット・リスク）
+
+- 
+
+### Neutral（中立的な影響）
+
+- 
+
+## Implementation Notes
+
+<!-- 実装時の具体的な注意点や詳細 -->
+
+### 実装手順
+1. 
+2. 
+3. 
+
+### 技術的詳細
+- 
+- 
+
+### 監視・メトリクス
+- 
+- 
+
+## Related Decisions
+
+${prNumber ? `- PR #${prNumber}: ${title}` : ''}
+- Issue #${issueData.number}: 関連する技術的決定
+
+## Future Considerations
+
+<!-- 将来的な検討事項 -->
+- 
+- 
+
+---
+
+**Date**: ${new Date().toISOString().split('T')[0]}  
+**Author**: Auto-generated  
+**Context**: Issue #${issueData.number} に基づく自動生成  
+${prNumber ? `**Reference**: PR #${prNumber}` : ''}
+
+<!-- 
+このADRドラフトは自動生成されました。
+以下の項目を必ず確認・更新してください：
+
+□ Context セクションの詳細化
+□ Decision セクションの具体化  
+□ Consequences の正確性確認
+□ Implementation Notes の追加
+□ Status を Proposed → Accepted に更新
+-->
+`;
+
+            return {
+              filename: `${nextNumber}-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}.md`,
+              content: adrContent,
+              number: nextNumber
+            };
+
+      - name: Create ADR draft file
+        id: create-file
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const draftData = JSON.parse('${{ steps.generate.outputs.result }}');
+            
+            // ADRファイルを作成
+            const filePath = `docs/adr/${draftData.filename}`;
+            fs.writeFileSync(filePath, draftData.content);
+            
+            console.log(`Created ADR draft: ${filePath}`);
+            return { filePath, filename: draftData.filename, number: draftData.number };
+
+      - name: Create PR for ADR draft
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fileData = JSON.parse('${{ steps.create-file.outputs.result }}');
+            const issueData = JSON.parse('${{ steps.parse.outputs.issue-data }}');
+            
+            // 新しいブランチ名を生成
+            const branchName = `adr-${fileData.number}-auto-draft`;
+            
+            // 現在のコミットSHAを取得
+            const { data: ref } = await github.rest.git.getRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'heads/main'
+            });
+            
+            // 新しいブランチを作成
+            try {
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `refs/heads/${branchName}`,
+                sha: ref.object.sha
+              });
+            } catch (error) {
+              if (error.status !== 422) throw error; // ブランチが既に存在する場合は無視
+            }
+            
+            // ファイルをコミット
+            const { data: fileInfo } = await github.rest.repos.getContent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: fileData.filePath,
+              ref: branchName
+            }).catch(() => ({ data: null })); // ファイルが存在しない場合
+            
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: fileData.filePath,
+              message: `🤖 自動生成: ADR-${fileData.number} ドラフト作成
+
+Issue #${issueData.number} に基づいてADRドラフトを自動生成しました。
+
+- 技術的決定の詳細化が必要
+- Context と Decision セクションの確認・更新
+- 実装詳細の追加
+
+🤖 Generated with [Claude Code](https://claude.ai/code)`,
+              content: Buffer.from(fs.readFileSync(fileData.filePath)).toString('base64'),
+              branch: branchName,
+              sha: fileInfo?.sha
+            });
+            
+            // プルリクエストを作成
+            const { data: pr } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🤖 ADR-${fileData.number}: ${issueData.title.replace(/^\[ADR\]\s*/, '')}`,
+              body: `## 🤖 自動生成されたADRドラフト
+
+Issue #${issueData.number} に基づいて、ADRドラフトを自動生成しました。
+
+### 📋 作成内容
+- **ファイル**: \`${fileData.filePath}\`
+- **ADR番号**: ${fileData.number}
+- **元Issue**: #${issueData.number}
+
+### ✅ レビュー・編集が必要な項目
+- [ ] Context セクションの詳細化
+- [ ] Decision セクションの具体的な決定内容
+- [ ] Consequences の正確性確認  
+- [ ] Implementation Notes の追加
+- [ ] Status を Proposed → Accepted に変更
+
+### 🔗 関連
+- **元Issue**: #${issueData.number}
+- **ADRディレクトリ**: [docs/adr/](docs/adr/)
+- **ADRガイド**: [docs/adr/README.md](docs/adr/README.md)
+
+---
+*このPRは自動生成されました。内容を確認・編集してからマージしてください。*`,
+              head: branchName,
+              base: 'main'
+            });
+            
+            // 元のIssueにコメント
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueData.number,
+              body: `## 🤖 ADRドラフトを自動生成しました
+
+ADR-${fileData.number} のドラフトを作成し、プルリクエストを作成しました。
+
+### 📄 生成内容
+- **ファイル**: \`${fileData.filePath}\`  
+- **PR**: #${pr.number}
+- **ブランチ**: \`${branchName}\`
+
+### 📝 次のステップ
+1. [PR #${pr.number}](${pr.html_url}) でドラフト内容を確認
+2. 必要に応じて内容を編集・詳細化
+3. レビュー・承認後にマージ
+
+---
+*自動生成されたドラフトです。必要に応じて編集してください。*`
+            });
+
+      - name: Update issue labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueData = JSON.parse('${{ steps.parse.outputs.issue-data }}');
+            
+            // ラベルを更新（needs-adr を削除、draft-created を追加）
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueData.number,
+              name: 'needs-adr'
+            }).catch(() => {}); // ラベルが存在しない場合は無視
+            
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueData.number,
+              labels: ['adr-draft-created', 'in-review']
+            });
