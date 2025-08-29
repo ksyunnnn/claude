@@ -53,3 +53,4 @@ fix_*.sql
 # Playwright
 test-results/
 playwright-report/
+sub/

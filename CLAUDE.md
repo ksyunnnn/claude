@@ -40,10 +40,59 @@ gh issue create --repo ksyunnnn/claude --title "[Session Log] <Brief Description
 - `npm run test:e2e` - Run Playwright end-to-end tests
 - `npm run test:e2e:ui` - Run Playwright tests with UI
 
+### Supabase Local Development Commands
+- `npm run db:start` - Start local Supabase services (requires Docker)
+- `npm run db:stop` - Stop local Supabase services
+- `npm run db:status` - Check status of local Supabase services
+- `npm run db:reset` - Reset database (apply all migrations and seed data)
+- `npm run db:migrate` - Create a new migration file
+- `npm run db:studio` - Open Supabase Studio in browser
+- `npm run db:mailbox` - Open Inbucket (local email testing) in browser
+
 ### Development Workflow
 - Use `npm run dev` for development with hot reload enabled
 - Always run `npm run lint` before committing changes
 - The project uses Turbopack for faster development builds
+
+### Local Supabase Development Setup
+
+#### Prerequisites
+- Docker Desktop must be installed and running
+- Supabase CLI installed (currently v2.34.3, update recommended to v2.39.2)
+
+#### Setup Commands
+```bash
+# Start local Supabase services
+supabase start
+
+# Check service status
+supabase status
+
+# Stop services (when done)
+supabase stop
+
+# Reset database (apply migrations and seed data)
+supabase db reset
+```
+
+#### Local Services
+- **API Server**: http://127.0.0.1:54321
+- **Database**: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+- **Studio (Admin)**: http://127.0.0.1:54323
+- **Inbucket (Email Testing)**: http://127.0.0.1:54324
+
+#### Environment Configuration
+For local development, update `.env.local`:
+```bash
+# Supabase - Local Development
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+```
+
+#### Database Management
+- Migrations are automatically applied when starting Supabase
+- Current migrations: initial_schema, fix_rls_policies, create_follows_table, create_likes_table
+- Use Supabase Studio for data visualization and management
 
 ## Architecture Overview
 

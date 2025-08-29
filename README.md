@@ -44,6 +44,7 @@ Claude Commandsは、開発者がClaude Code用のカスタムスラッシュコ
 - npm または yarn
 - Supabaseアカウント
 - GitHubアカウント（OAuth用）
+- Docker Desktop（ローカル開発用、オプション）
 
 ### 環境変数の設定
 
@@ -67,6 +68,39 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    - Client ID: GitHubで取得したOAuth App ID
    - Client Secret: GitHubで取得したOAuth App Secret
    - Redirect URL: `https://your-project.supabase.co/auth/v1/callback`
+
+### ローカル開発環境のセットアップ
+
+Dockerを使用してSupabaseをローカルで実行できます：
+
+```bash
+# Supabase CLIのインストール
+npm install -g supabase
+
+# ローカル環境の起動
+npm run db:start
+
+# ステータス確認
+npm run db:status
+
+# 管理画面を開く
+npm run db:studio
+
+# メールボックス（テスト用）を開く
+npm run db:mailbox
+
+# 環境の停止
+npm run db:stop
+```
+
+#### GitHub OAuth設定（ローカル開発用）
+
+1. [GitHub OAuth App作成手順](docs/github-oauth-setup.md)を参照してOAuth Appを作成
+2. `.env.local`に以下を追加：
+   ```env
+   SUPABASE_AUTH_EXTERNAL_GITHUB_CLIENT_ID=your_github_client_id
+   SUPABASE_AUTH_EXTERNAL_GITHUB_SECRET=your_github_client_secret
+   ```
 
 ### データベース設計について
 
