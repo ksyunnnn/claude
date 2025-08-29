@@ -14,8 +14,7 @@ export async function likeCommand(commandId: string) {
   }
 
   // Check if already liked
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: existingLike } = await (supabase as any)
+  const { data: existingLike } = await supabase
     .from('likes')
     .select('id')
     .eq('user_id', user.id)
@@ -27,8 +26,7 @@ export async function likeCommand(commandId: string) {
   }
 
   // Create like
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from('likes')
     .insert({
       user_id: user.id,
@@ -57,8 +55,7 @@ export async function unlikeCommand(commandId: string) {
   }
 
   // Delete like
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from('likes')
     .delete()
     .eq('user_id', user.id)
@@ -82,8 +79,7 @@ export async function getLikeStatus(commandId: string): Promise<boolean> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return false
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data } = await supabase
     .from('likes')
     .select('id')
     .eq('user_id', user.id)
@@ -96,8 +92,7 @@ export async function getLikeStatus(commandId: string): Promise<boolean> {
 export async function getLikeCount(commandId: string): Promise<number> {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { count } = await (supabase as any)
+  const { count } = await supabase
     .from('likes')
     .select('*', { count: 'exact' })
     .eq('command_id', commandId)
@@ -108,8 +103,7 @@ export async function getLikeCount(commandId: string): Promise<number> {
 export async function getLikedUsers(commandId: string): Promise<LikedUser[]> {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('likes')
     .select(`
       user_id,

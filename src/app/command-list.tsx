@@ -1,12 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Code2, User } from 'lucide-react'
+import type { CommandWithUser } from '@/types/database'
 
 export async function CommandList() {
   const supabase = await createClient()
   
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: commands } = await (supabase as any)
+  const { data: commands } = await supabase
     .from('commands')
     .select(`
       *,
@@ -31,8 +31,7 @@ export async function CommandList() {
 
   return (
     <div className="grid gap-4">
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      {commands.map((command: any) => {
+      {commands.map((command: CommandWithUser) => {
         const authorName = command.profiles?.full_name || command.profiles?.username || 'Anonymous'
         const profilePath = command.profiles?.username || command.user_id
         
@@ -60,7 +59,7 @@ export async function CommandList() {
                   </span>
                   <span className="text-sm text-muted-foreground">·</span>
                   <span className="text-sm text-muted-foreground">
-                    {new Date(command.created_at).toLocaleDateString()}
+                    {command.created_at ? new Date(command.created_at).toLocaleDateString() : 'No date'}
                   </span>
                 </div>
               </div>

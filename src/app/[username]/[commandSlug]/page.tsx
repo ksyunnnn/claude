@@ -29,8 +29,7 @@ export default async function CommandPage({ params }: CommandPageProps) {
   const { data: { user } } = await supabase.auth.getUser()
   const isOwner = user?.id === userId
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: command } = await (supabase as any)
+  const { data: command } = await supabase
     .from('commands')
     .select(`
       *,

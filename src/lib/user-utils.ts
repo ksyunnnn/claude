@@ -1,10 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
+import type { User } from '@/types/database'
 
-export async function getUserByUsername(username: string) {
+export async function getUserByUsername(username: string): Promise<User | null> {
   const supabase = await createClient()
   
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile, error } = await (supabase as any)
+  const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('username', username)
@@ -17,11 +17,10 @@ export async function getUserByUsername(username: string) {
   return profile
 }
 
-export async function getUserById(userId: string) {
+export async function getUserById(userId: string): Promise<User | null> {
   const supabase = await createClient()
   
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile, error } = await (supabase as any)
+  const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', userId)

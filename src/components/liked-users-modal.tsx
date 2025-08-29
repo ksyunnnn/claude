@@ -15,7 +15,7 @@ import Link from 'next/link'
 
 export interface LikedUser {
   user_id: string
-  created_at: string
+  created_at: string | null
   profiles: {
     id: string
     username: string | null
@@ -89,7 +89,7 @@ export function LikedUsersModal({ likedUsers, likeCount }: LikedUsersModalProps)
                     </Link>
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {new Date(like.created_at).toLocaleDateString()}
+                    {like.created_at ? new Date(like.created_at).toLocaleDateString() : 'No date'}
                   </span>
                 </div>
               ))}

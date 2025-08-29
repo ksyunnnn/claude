@@ -24,8 +24,7 @@ export default async function EditCommandPage({ params }: EditCommandPageProps) 
     redirect('/')
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: command } = await (supabase as any)
+  const { data: command } = await supabase
     .from('commands')
     .select('*')
     .eq('user_id', userId)

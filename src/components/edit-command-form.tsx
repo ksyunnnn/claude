@@ -10,20 +10,11 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-
-interface Command {
-  id: string
-  user_id: string
-  name: string
-  slug: string
-  description: string | null
-  content: string
-  is_public: boolean
-}
+import type { Command } from '@/types/database'
 
 interface EditCommandFormProps {
   command: Command
-  username?: string | null
+  username?: string | null | undefined
 }
 
 export function EditCommandForm({ command, username }: EditCommandFormProps) {
@@ -33,7 +24,7 @@ export function EditCommandForm({ command, username }: EditCommandFormProps) {
     name: command.name,
     description: command.description || '',
     content: command.content,
-    isPublic: command.is_public,
+    isPublic: command.is_public ?? true,
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,8 +34,7 @@ export function EditCommandForm({ command, username }: EditCommandFormProps) {
     try {
       const supabase = createClient()
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('commands')
         .update({
           name: formData.name,
@@ -79,8 +69,7 @@ export function EditCommandForm({ command, username }: EditCommandFormProps) {
     try {
       const supabase = createClient()
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('commands')
         .delete()
         .eq('id', command.id)

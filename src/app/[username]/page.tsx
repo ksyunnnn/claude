@@ -6,6 +6,7 @@ import { ArrowLeft, Code2, Lock, Globe, Users } from 'lucide-react'
 import FollowButton from '@/components/follow-button'
 import { getFollowStatus, getFollowCounts } from '@/lib/actions/follow-actions'
 import { getUserByUsername } from '@/lib/user-utils'
+import type { Command } from '@/types/database'
 
 interface UserPageProps {
   params: Promise<{ username: string }>
@@ -29,8 +30,7 @@ export default async function UserPage({ params }: UserPageProps) {
   const isFollowing = user ? await getFollowStatus(userId) : false
   const { followers, following } = await getFollowCounts(userId)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let commandsQuery = (supabase as any)
+  let commandsQuery = supabase
     .from('commands')
     .select('*')
     .eq('user_id', userId)
@@ -115,8 +115,7 @@ export default async function UserPage({ params }: UserPageProps) {
           <h2 className="text-xl font-semibold mb-4">Commands</h2>
           <div className="grid gap-4">
             {commands && commands.length > 0 ? (
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              commands.map((command: any) => (
+              commands.map((command: Command) => (
                 <Link
                   key={command.id}
                   href={`/${username}/${command.slug}`}

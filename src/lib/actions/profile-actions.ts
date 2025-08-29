@@ -23,8 +23,7 @@ export async function updateUsername(username: string) {
   }
 
   // Check if username is already taken
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: existingUser } = await (supabase as any)
+  const { data: existingUser } = await supabase
     .from('profiles')
     .select('id')
     .eq('username', username)
@@ -36,8 +35,7 @@ export async function updateUsername(username: string) {
   }
 
   // Update username
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from('profiles')
     .update({ username })
     .eq('id', user.id)
@@ -64,8 +62,7 @@ export async function updateProfile(fullName: string) {
   }
 
   // Update full name
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from('profiles')
     .update({ full_name: fullName })
     .eq('id', user.id)

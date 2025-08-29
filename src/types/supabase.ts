@@ -109,7 +109,7 @@ export type Database = {
 // Helper types for follow relationships
 export type FollowerWithProfile = {
   follower_id: string
-  created_at: string
+  created_at: string | null
   profiles: {
     id: string
     username: string | null
@@ -120,7 +120,7 @@ export type FollowerWithProfile = {
 
 export type FollowingWithProfile = {
   following_id: string
-  created_at: string
+  created_at: string | null
   profiles: {
     id: string
     username: string | null

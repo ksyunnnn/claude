@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { getUserById } from '@/lib/user-utils'
+import type { FollowerWithProfile, FollowingWithProfile } from '@/types/supabase'
 
 export async function followUser(followingId: string) {
   const supabase = await createClient()
@@ -15,8 +16,7 @@ export async function followUser(followingId: string) {
   }
 
   // Check if already following
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: existingFollow } = await (supabase as any)
+  const { data: existingFollow } = await supabase
     .from('follows')
     .select('id')
     .eq('follower_id', user.id)
@@ -28,8 +28,7 @@ export async function followUser(followingId: string) {
   }
 
   // Create follow relationship
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from('follows')
     .insert({
       follower_id: user.id,
@@ -72,8 +71,7 @@ export async function unfollowUser(followingId: string) {
   }
 
   // Delete follow relationship
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from('follows')
     .delete()
     .eq('follower_id', user.id)
@@ -111,8 +109,7 @@ export async function getFollowStatus(followingId: string): Promise<boolean> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return false
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data } = await supabase
     .from('follows')
     .select('id')
     .eq('follower_id', user.id)
@@ -126,15 +123,13 @@ export async function getFollowCounts(userId: string) {
   const supabase = await createClient()
 
   // Get follower count
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { count: followerCount } = await (supabase as any)
+  const { count: followerCount } = await supabase
     .from('follows')
     .select('*', { count: 'exact' })
     .eq('following_id', userId)
 
   // Get following count
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { count: followingCount } = await (supabase as any)
+  const { count: followingCount } = await supabase
     .from('follows')
     .select('*', { count: 'exact' })
     .eq('follower_id', userId)
@@ -145,11 +140,10 @@ export async function getFollowCounts(userId: string) {
   }
 }
 
-export async function getFollowers(userId: string) {
+export async function getFollowers(userId: string): Promise<FollowerWithProfile[]> {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('follows')
     .select(`
       follower_id,
@@ -172,11 +166,10 @@ export async function getFollowers(userId: string) {
   return data || []
 }
 
-export async function getFollowing(userId: string) {
+export async function getFollowing(userId: string): Promise<FollowingWithProfile[]> {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('follows')
     .select(`
       following_id,

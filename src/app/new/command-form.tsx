@@ -13,7 +13,7 @@ import Link from 'next/link'
 
 interface CommandFormProps {
   userId: string
-  username: string | null
+  username: string | null | undefined
 }
 
 export function CommandForm({ userId, username }: CommandFormProps) {
@@ -41,8 +41,7 @@ export function CommandForm({ userId, username }: CommandFormProps) {
       const supabase = createClient()
       const slug = generateSlug(formData.name)
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('commands')
         .insert({
           user_id: userId,
