@@ -33,6 +33,7 @@ NNNN-title-with-dashes.md
 - [ADR-0004: React 19 useOptimisticフックの採用](0004-react-use-optimistic.md)
 - [ADR-0005: Radix UI拡張戦略](0005-radix-ui-extension-strategy.md)
 - [ADR-0006: Commandいいね機能の実装](0006-command-like-system.md)
+- [ADR-0007: ローカルSupabase開発環境とGitHub OAuth対応](0007-local-supabase-development.md)
 
 ## 自動化システム
 
