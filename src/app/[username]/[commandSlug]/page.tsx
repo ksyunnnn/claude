@@ -10,9 +10,76 @@ import { LikedUsersModal, type LikedUser } from '@/components/liked-users-modal'
 import { getLikeCount, getLikeStatus, getLikedUsers } from '@/lib/actions/like-actions'
 import { isAuthenticated } from '@/lib/auth-utils'
 import { LikeErrorHandler } from '@/components/like-error-handler'
+import type { Metadata } from 'next'
 
 interface CommandPageProps {
   params: Promise<{ username: string; commandSlug: string }>
+}
+
+export async function generateMetadata({ params }: CommandPageProps): Promise<Metadata> {
+  const { username, commandSlug } = await params
+  const supabase = await createClient()
+  
+  // Get user profile by username or ID
+  const profile = await getUserByIdentifier(username)
+  if (!profile) {
+    return {
+      title: 'Command Not Found',
+    }
+  }
+
+  const userId = profile.id
+
+  const { data: command } = await supabase
+    .from('commands')
+    .select(`
+      *,
+      profiles:user_id (
+        username,
+        full_name
+      )
+    `)
+    .eq('user_id', userId)
+    .eq('slug', commandSlug)
+    .single()
+
+  if (!command) {
+    return {
+      title: 'Command Not Found',
+    }
+  }
+
+  const authorName = command.profiles?.full_name || command.profiles?.username || 'Anonymous'
+  const title = `${command.name} by ${authorName} - Slash Commands`
+  const description = command.description || `A slash command by ${authorName}`
+  const url = `/${username}/${commandSlug}`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Slash Commands',
+      images: [
+        {
+          url: `/${username}/${commandSlug}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: `${command.name} by ${authorName}`,
+        },
+      ],
+      type: 'article',
+      locale: 'en_US',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`/${username}/${commandSlug}/opengraph-image`],
+    },
+  }
 }
 
 export default async function CommandPage({ params }: CommandPageProps) {
