@@ -54,3 +54,7 @@ fix_*.sql
 test-results/
 playwright-report/
 sub/
+
+# Remotion
+remotion-demo/out/
+remotion-demo/node_modules/

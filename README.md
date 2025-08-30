@@ -15,6 +15,7 @@ Claude Commandsは、開発者がClaude Code用のカスタムスラッシュコ
 - 👤 **ユーザープロファイル管理**: カスタムユーザー名・フルネーム設定機能
 - 🌐 **ユーザー名ベースのURL**: カスタマイズ可能な美しいURL（例: `/ksyunnnn/following`）
 - 👥 **フォロー機能**: ユーザー同士のつながりとコミュニティ形成
+- 🎥 **プロダクト説明動画**: Remotionによる高品質な動画生成（15秒のデモ動画）
 - 🎨 **モダンなUI**: shadcn/ui、Tailwind CSS v4による洗練されたデザイン
 - 📱 **レスポンシブデザイン**: モバイル・デスクトップ両対応
 
@@ -35,6 +36,7 @@ Claude Commandsは、開発者がClaude Code用のカスタムスラッシュコ
 - **Testing**: Playwright - E2Eテスト自動化
 - **Linting**: ESLint - Next.js推奨設定
 - **Build Tool**: Turbopack - 高速な開発体験
+- **Video Creation**: Remotion 4.0.340 - プログラマブルな動画制作
 
 ## セットアップ
 

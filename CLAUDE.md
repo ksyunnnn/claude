@@ -49,6 +49,17 @@ gh issue create --repo ksyunnnn/claude --title "[Session Log] <Brief Description
 - `npm run db:studio` - Open Supabase Studio in browser
 - `npm run db:mailbox` - Open Inbucket (local email testing) in browser
 
+### Remotion動画制作コマンド
+- `npm run video:start` - Remotionスタジオを起動してプレビュー
+- `npm run video:build` - 最終動画を書き出し (out/advanced-demo.mp4)
+- `npm run video:audio` - 音声ファイルを再生成
+
+### 動画制作ワークフロー
+1. **音声スクリプト編集**: `remotion-demo/src/audio-config.ts`でナレーションテキストとタイミングを調整
+2. **音声生成**: `npm run video:audio`でmacOS sayコマンドによる音声ファイル生成
+3. **プレビュー**: `npm run video:start`でRemotionスタジオを起動し、リアルタイムプレビュー
+4. **最終書き出し**: `npm run video:build`でMP4動画を生成
+
 ### Development Workflow
 - Use `npm run dev` for development with hot reload enabled
 - Always run `npm run lint` before committing changes
@@ -105,6 +116,7 @@ This is a **Next.js 15 App Router** project with the following stack:
 - **UI Components**: Radix UI primitives with shadcn/ui patterns
 - **Icons**: Lucide React
 - **Testing**: Playwright for E2E testing
+- **Video Creation**: Remotion 4.0.340 (プロダクト説明動画制作)
 - **Deployment**: Vercel
 
 ### Project Structure
@@ -136,6 +148,15 @@ src/
 │   └── utils.ts             # Helper utilities
 ├── types/                    # TypeScript type definitions
 └── middleware.ts            # Next.js middleware for auth
+
+remotion-demo/                # 動画制作プロジェクト
+├── src/                     # Remotionコンポーネント
+│   ├── AdvancedDemo.tsx     # 高度な音声同期動画
+│   ├── audio-config.ts      # 音声・タイミング設定
+│   └── components/          # 字幕等のコンポーネント
+├── public/                  # 音声ファイル (WAV形式)
+├── out/                     # 生成された動画
+└── package.json            # Remotion専用の依存関係
 ```
 
 ### Key Features
@@ -145,6 +166,7 @@ src/
 - **Real-time Updates**: Supabase real-time subscriptions
 - **Responsive Design**: Mobile-first Tailwind CSS design
 - **End-to-End Testing**: Comprehensive Playwright test suite
+- **Product Demo Videos**: Automated video generation with Remotion (15秒のプロダクト説明動画)
 
 ### Database Schema
 - **users**: User profiles and metadata
