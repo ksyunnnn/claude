@@ -10,9 +10,71 @@ import { LikedUsersModal, type LikedUser } from '@/components/liked-users-modal'
 import { getLikeCount, getLikeStatus, getLikedUsers } from '@/lib/actions/like-actions'
 import { isAuthenticated } from '@/lib/auth-utils'
 import { LikeErrorHandler } from '@/components/like-error-handler'
+import type { Metadata } from 'next'
 
 interface CommandPageProps {
   params: Promise<{ username: string; commandSlug: string }>
+}
+
+export async function generateMetadata({ params }: CommandPageProps): Promise<Metadata> {
+  const { username, commandSlug } = await params
+  const supabase = await createClient()
+  
+  // Get user profile by username
+  const profile = await getUserByUsername(username)
+  if (!profile) {
+    return {
+      title: 'Command not found - Claude Commands',
+    }
+  }
+
+  const { data: command } = await supabase
+    .from('commands')
+    .select(`
+      *,
+      profiles:user_id (
+        username,
+        full_name
+      )
+    `)
+    .eq('user_id', profile.id)
+    .eq('slug', commandSlug)
+    .single()
+
+  if (!command) {
+    return {
+      title: 'Command not found - Claude Commands',
+    }
+  }
+
+  const authorName = command.profiles?.full_name || command.profiles?.username || 'Anonymous'
+  const title = `${command.name} by ${authorName} - Claude Commands`
+  const description = command.description 
+    ? `${command.description} Created by ${authorName}. Use this custom slash command in Claude Code.`
+    : `Custom slash command /${command.slug} by ${authorName}. Use in Claude Code for enhanced development workflow.`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      images: [
+        {
+          url: `/api/og/command?name=${encodeURIComponent(command.name)}&author=${encodeURIComponent(authorName)}&description=${encodeURIComponent(command.description || '')}`,
+          width: 1200,
+          height: 630,
+          alt: `${command.name} by ${authorName}`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+  }
 }
 
 export default async function CommandPage({ params }: CommandPageProps) {

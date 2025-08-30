@@ -7,9 +7,57 @@ import FollowButton from '@/components/follow-button'
 import { getFollowStatus, getFollowCounts } from '@/lib/actions/follow-actions'
 import { getUserByUsername } from '@/lib/user-utils'
 import type { Command } from '@/types/database'
+import type { Metadata } from 'next'
 
 interface UserPageProps {
   params: Promise<{ username: string }>
+}
+
+export async function generateMetadata({ params }: UserPageProps): Promise<Metadata> {
+  const { username } = await params
+  const profile = await getUserByUsername(username)
+  
+  if (!profile) {
+    return {
+      title: 'User not found - Claude Commands',
+    }
+  }
+
+  const displayName = profile.full_name || profile.username || 'Anonymous User'
+  const supabase = await createClient()
+  
+  // Get command count
+  const { count: commandCount } = await supabase
+    .from('commands')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', profile.id)
+    .eq('is_public', true)
+
+  const title = `${displayName} (@${profile.username}) - Claude Commands`
+  const description = `View ${displayName}'s ${commandCount || 0} custom slash commands for Claude Code. Discover and use community-created commands.`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'profile',
+      images: [
+        {
+          url: `/api/og/user?username=${encodeURIComponent(username)}&name=${encodeURIComponent(displayName)}&commands=${commandCount || 0}`,
+          width: 1200,
+          height: 630,
+          alt: `${displayName}のプロフィール`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+  }
 }
 
 export default async function UserPage({ params }: UserPageProps) {
