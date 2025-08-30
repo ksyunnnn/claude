@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Claude Commands - Share Custom Slash Commands",
+  title: "Slash Commands - Share Custom Slash Commands",
   description: "Share and discover custom slash commands for Claude Code",
 };
 

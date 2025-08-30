@@ -5,7 +5,7 @@ test.describe('Home page', () => {
     await page.goto('/');
     
     // Check page title
-    await expect(page).toHaveTitle(/Claude Commands/);
+    await expect(page).toHaveTitle(/Slash Commands/);
     
     // Check main heading
     await expect(page.locator('h1')).toContainText('Share Your Claude Code Commands');
@@ -21,7 +21,7 @@ test.describe('Home page', () => {
     await page.goto('/');
     
     // Check logo/brand link
-    await expect(page.locator('text=Claude Commands')).toBeVisible();
+    await expect(page.locator('text=Slash Commands')).toBeVisible();
     
     // Check if the logo link navigates to home
     const logoLink = page.locator('a[href="/"]').first();

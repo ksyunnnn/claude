@@ -1,6 +1,6 @@
 # Vercel デプロイ手順
 
-このドキュメントでは、Claude Commands を Vercel にデプロイするための詳細な手順を説明します。
+このドキュメントでは、Slash Commands を Vercel にデプロイするための詳細な手順を説明します。
 
 ## 前提条件
 

@@ -15,7 +15,7 @@
 
    ### ローカル開発環境用の設定値
    
-   - **Application name**: `Claude Commands (Local)`
+   - **Application name**: `Slash Commands (Local)`
    - **Homepage URL**: `http://localhost:3000`
    - **Application description**: （任意）Local development environment
    - **Authorization callback URL**: `http://127.0.0.1:54321/auth/v1/callback`
