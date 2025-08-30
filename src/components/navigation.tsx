@@ -24,7 +24,7 @@ export async function Navigation() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
           <Code2 className="h-6 w-6" />
-          Claude Commands
+          Slash Commands
         </Link>
         <nav className="flex items-center gap-4">
           {user ? (
