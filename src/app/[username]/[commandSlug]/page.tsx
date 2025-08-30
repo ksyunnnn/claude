@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { ArrowLeft, Edit } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CommandActions } from '@/components/command-actions'
-import { getUserByUsername } from '@/lib/user-utils'
+import { getUserByIdentifier } from '@/lib/user-utils'
 import { LikeButton } from '@/components/like-button'
 import { LikedUsersModal, type LikedUser } from '@/components/liked-users-modal'
 import { getLikeCount, getLikeStatus, getLikedUsers } from '@/lib/actions/like-actions'
@@ -19,8 +19,8 @@ export default async function CommandPage({ params }: CommandPageProps) {
   const { username, commandSlug } = await params
   const supabase = await createClient()
   
-  // Get user profile by username
-  const profile = await getUserByUsername(username)
+  // Get user profile by username or ID
+  const profile = await getUserByIdentifier(username)
   if (!profile) {
     notFound()
   }
