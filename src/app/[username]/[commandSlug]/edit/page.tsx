@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import { EditCommandForm } from '@/components/edit-command-form'
-import { getUserByUsername } from '@/lib/user-utils'
+import { getUserByIdentifier } from '@/lib/user-utils'
 
 interface EditCommandPageProps {
   params: Promise<{ username: string; commandSlug: string }>
@@ -11,8 +11,8 @@ export default async function EditCommandPage({ params }: EditCommandPageProps) 
   const { username, commandSlug } = await params
   const supabase = await createClient()
   
-  // Get user profile by username
-  const profile = await getUserByUsername(username)
+  // Get user profile by username or ID
+  const profile = await getUserByIdentifier(username)
   if (!profile) {
     notFound()
   }

@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { getFollowing } from '@/lib/actions/follow-actions'
 import FollowButton from '@/components/follow-button'
-import { getUserByUsername } from '@/lib/user-utils'
+import { getUserByIdentifier } from '@/lib/user-utils'
 import type { FollowingWithProfile } from '@/types/supabase'
 
 interface FollowingPageProps {
@@ -15,8 +15,8 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
   const { username } = await params
   const supabase = await createClient()
 
-  // Get user profile by username
-  const profile = await getUserByUsername(username)
+  // Get user profile by username or ID
+  const profile = await getUserByIdentifier(username)
   if (!profile) {
     notFound()
   }

@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { ArrowLeft, Code2, Lock, Globe, Users } from 'lucide-react'
 import FollowButton from '@/components/follow-button'
 import { getFollowStatus, getFollowCounts } from '@/lib/actions/follow-actions'
-import { getUserByUsername } from '@/lib/user-utils'
+import { getUserByIdentifier } from '@/lib/user-utils'
 import type { Command } from '@/types/database'
 
 interface UserPageProps {
@@ -16,8 +16,8 @@ export default async function UserPage({ params }: UserPageProps) {
   const { username } = await params
   const supabase = await createClient()
   
-  // Get user profile by username
-  const profile = await getUserByUsername(username)
+  // Get user profile by username or ID
+  const profile = await getUserByIdentifier(username)
   if (!profile) {
     notFound()
   }
