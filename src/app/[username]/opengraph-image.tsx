@@ -65,28 +65,66 @@ export default async function Image({ params }: Props) {
               marginBottom: 40,
             }}
           >
-            {/* Logo */}
+            {/* Favicon-style Icon */}
             <div
               style={{
-                width: 60,
-                height: 60,
+                width: 70,
+                height: 70,
                 backgroundColor: '#4B5563',
-                borderRadius: 12,
+                borderRadius: 14,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginRight: 20,
+                position: 'relative',
               }}
             >
+              {/* Modern command symbol - stylized chevron */}
               <div
                 style={{
-                  color: 'white',
-                  fontSize: 36,
-                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative',
                 }}
               >
-                》
+                {/* Main chevron shape */}
+                <div
+                  style={{
+                    width: '0',
+                    height: '0',
+                    borderLeft: '12px solid white',
+                    borderTop: '8px solid transparent',
+                    borderBottom: '8px solid transparent',
+                    marginRight: '4px',
+                    opacity: 0.95,
+                  }}
+                />
+                
+                {/* Secondary smaller chevron for depth */}
+                <div
+                  style={{
+                    width: '0',
+                    height: '0',
+                    borderLeft: '8px solid rgba(255, 255, 255, 0.7)',
+                    borderTop: '6px solid transparent',
+                    borderBottom: '6px solid transparent',
+                  }}
+                />
               </div>
+              
+              {/* Subtle highlight dot */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  width: '6px',
+                  height: '6px',
+                  background: 'rgba(255, 255, 255, 0.4)',
+                  borderRadius: '50%',
+                }}
+              />
             </div>
             <div
               style={{
@@ -260,27 +298,66 @@ function defaultImage() {
             marginBottom: 40,
           }}
         >
+          {/* Favicon-style Icon */}
           <div
             style={{
-              width: 80,
-              height: 80,
+              width: 100,
+              height: 100,
               backgroundColor: '#4B5563',
-              borderRadius: 16,
+              borderRadius: 20,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginRight: 24,
+              marginRight: 32,
+              position: 'relative',
             }}
           >
+            {/* Modern command symbol - stylized chevron */}
             <div
               style={{
-                color: 'white',
-                fontSize: 48,
-                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
               }}
             >
-              》
+              {/* Main chevron shape */}
+              <div
+                style={{
+                  width: '0',
+                  height: '0',
+                  borderLeft: '18px solid white',
+                  borderTop: '12px solid transparent',
+                  borderBottom: '12px solid transparent',
+                  marginRight: '6px',
+                  opacity: 0.95,
+                }}
+              />
+              
+              {/* Secondary smaller chevron for depth */}
+              <div
+                style={{
+                  width: '0',
+                  height: '0',
+                  borderLeft: '12px solid rgba(255, 255, 255, 0.7)',
+                  borderTop: '9px solid transparent',
+                  borderBottom: '9px solid transparent',
+                }}
+              />
             </div>
+            
+            {/* Subtle highlight dot */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '18px',
+                right: '18px',
+                width: '9px',
+                height: '9px',
+                background: 'rgba(255, 255, 255, 0.4)',
+                borderRadius: '50%',
+              }}
+            />
           </div>
           <div
             style={{

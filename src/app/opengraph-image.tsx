@@ -34,29 +34,66 @@ export default async function Image() {
             marginBottom: 40,
           }}
         >
-          {/* Double Chevron Logo */}
+          {/* Favicon-style Icon */}
           <div
             style={{
-              width: 80,
-              height: 80,
+              width: 100,
+              height: 100,
               backgroundColor: '#4B5563',
-              borderRadius: 16,
+              borderRadius: 20,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginRight: 24,
+              marginRight: 32,
+              position: 'relative',
             }}
           >
+            {/* Modern command symbol - stylized chevron (scaled up for OGP) */}
             <div
               style={{
-                color: 'white',
-                fontSize: 48,
-                fontWeight: 'bold',
                 display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
               }}
             >
-              》
+              {/* Main chevron shape */}
+              <div
+                style={{
+                  width: '0',
+                  height: '0',
+                  borderLeft: '18px solid white',
+                  borderTop: '12px solid transparent',
+                  borderBottom: '12px solid transparent',
+                  marginRight: '6px',
+                  opacity: 0.95,
+                }}
+              />
+              
+              {/* Secondary smaller chevron for depth */}
+              <div
+                style={{
+                  width: '0',
+                  height: '0',
+                  borderLeft: '12px solid rgba(255, 255, 255, 0.7)',
+                  borderTop: '9px solid transparent',
+                  borderBottom: '9px solid transparent',
+                }}
+              />
             </div>
+            
+            {/* Subtle highlight dot */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '18px',
+                right: '18px',
+                width: '9px',
+                height: '9px',
+                background: 'rgba(255, 255, 255, 0.4)',
+                borderRadius: '50%',
+              }}
+            />
           </div>
           <div
             style={{
@@ -77,7 +114,7 @@ export default async function Image() {
             lineHeight: 1.3,
           }}
         >
-          Share and discover custom slash commands for Claude Code
+          Share and discover slash commands for Claude Code
         </div>
       </div>
     ),

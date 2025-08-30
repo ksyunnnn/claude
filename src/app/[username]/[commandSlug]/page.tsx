@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: CommandPageProps): Promise<Me
 
   const authorName = command.profiles?.full_name || command.profiles?.username || 'Anonymous'
   const title = `${command.name} by ${authorName} - Slash Commands`
-  const description = command.description || `A custom slash command by ${authorName}`
+  const description = command.description || `A slash command by ${authorName}`
   const url = `/${username}/${commandSlug}`
 
   return {
@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: CommandPageProps): Promise<Me
       siteName: 'Slash Commands',
       images: [
         {
-          url: `/opengraph-image?title=${encodeURIComponent(command.name)}&author=${encodeURIComponent(authorName)}&description=${encodeURIComponent(description)}`,
+          url: `/${username}/${commandSlug}/opengraph-image`,
           width: 1200,
           height: 630,
           alt: `${command.name} by ${authorName}`,
@@ -77,7 +77,7 @@ export async function generateMetadata({ params }: CommandPageProps): Promise<Me
       card: 'summary_large_image',
       title,
       description,
-      images: [`/opengraph-image?title=${encodeURIComponent(command.name)}&author=${encodeURIComponent(authorName)}&description=${encodeURIComponent(description)}`],
+      images: [`/${username}/${commandSlug}/opengraph-image`],
     },
   }
 }
