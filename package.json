@@ -15,7 +15,10 @@
     "db:reset": "supabase db reset",
     "db:migrate": "supabase migration new",
     "db:studio": "open http://127.0.0.1:54323",
-    "db:mailbox": "open http://127.0.0.1:54324"
+    "db:mailbox": "open http://127.0.0.1:54324",
+    "video:start": "cd remotion-demo && npm start",
+    "video:build": "cd remotion-demo && npx remotion render AdvancedDemo out/advanced-demo.mp4",
+    "video:audio": "cd remotion-demo && ./generate-audio.sh"
   },
   "dependencies": {
     "@playwright/mcp": "^0.0.35",
