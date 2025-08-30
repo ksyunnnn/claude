@@ -7,9 +7,67 @@ import FollowButton from '@/components/follow-button'
 import { getFollowStatus, getFollowCounts } from '@/lib/actions/follow-actions'
 import { getUserByIdentifier } from '@/lib/user-utils'
 import type { Command } from '@/types/database'
+import type { Metadata } from 'next'
 
 interface UserPageProps {
   params: Promise<{ username: string }>
+}
+
+export async function generateMetadata({ params }: UserPageProps): Promise<Metadata> {
+  const { username } = await params
+  const supabase = await createClient()
+  
+  // Get user profile by username or ID
+  const profile = await getUserByIdentifier(username)
+  if (!profile) {
+    return {
+      title: 'User Not Found',
+    }
+  }
+
+  const userId = profile.id
+  
+  // Get follow counts
+  const { followers, following } = await getFollowCounts(userId)
+  
+  // Get command count
+  const { count: commandCount } = await supabase
+    .from('commands')
+    .select('*', { count: 'exact' })
+    .eq('user_id', userId)
+    .eq('is_public', true)
+
+  const userName = profile.full_name || profile.username || 'Anonymous User'
+  const title = `${userName} - Slash Commands`
+  const description = `${userName} has ${commandCount || 0} public slash commands, ${followers} followers, and is following ${following} users.`
+  const url = `/${username}`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Slash Commands',
+      images: [
+        {
+          url: `/opengraph-image?title=${encodeURIComponent(userName)}&followers=${followers}&following=${following}&commands=${commandCount || 0}`,
+          width: 1200,
+          height: 630,
+          alt: `${userName} profile`,
+        },
+      ],
+      type: 'profile',
+      locale: 'en_US',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`/opengraph-image?title=${encodeURIComponent(userName)}&followers=${followers}&following=${following}&commands=${commandCount || 0}`],
+    },
+  }
 }
 
 export default async function UserPage({ params }: UserPageProps) {
