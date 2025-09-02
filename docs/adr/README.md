@@ -34,6 +34,9 @@ NNNN-title-with-dashes.md
 - [ADR-0005: Radix UI拡張戦略](0005-radix-ui-extension-strategy.md)
 - [ADR-0006: Commandいいね機能の実装](0006-command-like-system.md)
 - [ADR-0007: ローカルSupabase開発環境とGitHub OAuth対応](0007-local-supabase-development.md)
+- [ADR-0008: ユーザー識別子改善 - Username/UUID両対応システム](0008-user-identifier-improvement.md)
+- [ADR-0009: Remotion動画制作システムの採用とメインプロジェクトへの統合](0009-remotion-video-creation-adoption.md)
+- [ADR-0010: コマンドいいねシステムの設計とユーザー体験改善](0010-command-like-system-design.md)
 
 ## 自動化システム
 
