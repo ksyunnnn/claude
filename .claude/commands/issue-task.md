@@ -8,7 +8,7 @@ Issue駆動型タスク実行フレームワークを実行します。
 
 ## 使用方法
 
-- `/issue-task` - 対話的にissue選択
+- `/issue-task` - 対話的にissue選択 - 必ずユーザーの選択を待つ
 - `/issue-task 10` - Issue #10を処理
 - `/issue-task 10 --repo ksyunnnn/claude` - 特定リポジトリのIssue #10を処理
 - `/issue-task 10 --auto-confirm` - 確認をスキップして自動実行
