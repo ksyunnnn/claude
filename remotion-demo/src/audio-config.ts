@@ -9,35 +9,42 @@ export interface AudioSegment {
 
 export const FPS = 30;
 
-// 音声セグメントの定義（30fps基準）
+// 音声セグメントの定義（30fps基準）- 60秒ハッカソン発表版
 export const audioSegments: AudioSegment[] = [
   {
-    id: 'intro',
-    text: 'Command Shareへようこそ。コマンドラインの知識を共有する新しいプラットフォームです。',
+    id: 'introduction',
+    text: 'こんにちは、登壇者のこばしゅんは帰ってしまったので、代わりにこの動画が発表します。',
     startFrame: 0,
-    durationFrames: 90, // 3秒
-    filename: 'narration-1.wav'
+    durationFrames: 300, // 10秒
+    filename: 'hackathon-1.wav'
   },
   {
-    id: 'features',
-    text: '主な機能をご紹介します。コマンドの共有、フォロー機能、高速検索、そしてGitHub認証による安全なログインが可能です。',
-    startFrame: 90,
+    id: 'product-intro',
+    text: 'Claude Codeのカスタムスラッシュコマンドを共有するWebサービスを、Claude Code自身と協業で開発しました。',
+    startFrame: 300,
+    durationFrames: 450, // 15秒
+    filename: 'hackathon-2.wav'
+  },
+  {
+    id: 'tech-demo',
+    text: 'Next.js 15とSupabaseによる最新フルスタック構成で、GitHub認証、リアルタイム共有、フォロー機能を実装。',
+    startFrame: 750,
+    durationFrames: 450, // 15秒
+    filename: 'hackathon-3.wav'
+  },
+  {
+    id: 'collaboration-highlight',
+    text: '総開発コード15,000行、47回のコミット、全て人間とAIの協業で実現。革新的な開発手法を確立しました。',
+    startFrame: 1200,
+    durationFrames: 450, // 15秒
+    filename: 'hackathon-4.wav'
+  },
+  {
+    id: 'conclusion-cta',
+    text: 'slash-commands.comで今すぐ体験できます。この動画もClaude Codeが生成しています。',
+    startFrame: 1650,
     durationFrames: 150, // 5秒
-    filename: 'narration-2.wav'
-  },
-  {
-    id: 'demo',
-    text: '実際の使用例をご覧ください。このように、コマンドとその説明を簡単に共有できます。',
-    startFrame: 240,
-    durationFrames: 120, // 4秒
-    filename: 'narration-3.wav'
-  },
-  {
-    id: 'cta',
-    text: '今すぐcommand-share.appにアクセスして、あなたの知識を共有しましょう。',
-    startFrame: 360,
-    durationFrames: 90, // 3秒
-    filename: 'narration-4.wav'
+    filename: 'hackathon-5.wav'
   }
 ];
 
@@ -50,48 +57,63 @@ export interface SubtitleSegment {
 
 export const subtitles: SubtitleSegment[] = [
   {
-    text: 'Command Shareへようこそ',
+    text: '登壇者は帰りました',
     startFrame: 0,
-    endFrame: 45
+    endFrame: 150
   },
   {
-    text: 'コマンドラインの知識を共有する新しいプラットフォームです',
-    startFrame: 45,
-    endFrame: 90
-  },
-  {
-    text: '主な機能をご紹介します',
-    startFrame: 90,
-    endFrame: 135
-  },
-  {
-    text: 'コマンドの共有、フォロー機能',
-    startFrame: 135,
-    endFrame: 180
-  },
-  {
-    text: '高速検索、GitHub認証による安全なログイン',
-    startFrame: 180,
-    endFrame: 240
-  },
-  {
-    text: '実際の使用例をご覧ください',
-    startFrame: 240,
+    text: '代わりに動画が発表',
+    startFrame: 150,
     endFrame: 300
   },
   {
-    text: 'コマンドとその説明を簡単に共有できます',
+    text: 'Claude Codeスラッシュコマンド共有サービス',
     startFrame: 300,
-    endFrame: 360
+    endFrame: 600
   },
   {
-    text: '今すぐcommand-share.appにアクセス',
-    startFrame: 360,
-    endFrame: 410
+    text: 'Claude Code自身と協業開発',
+    startFrame: 600,
+    endFrame: 750
   },
   {
-    text: 'あなたの知識を共有しましょう',
-    startFrame: 410,
-    endFrame: 450
+    text: 'Next.js 15 + Supabase',
+    startFrame: 750,
+    endFrame: 900
+  },
+  {
+    text: 'GitHub認証・リアルタイム共有',
+    startFrame: 900,
+    endFrame: 1050
+  },
+  {
+    text: 'フォロー機能',
+    startFrame: 1050,
+    endFrame: 1200
+  },
+  {
+    text: '15,000行のコード',
+    startFrame: 1200,
+    endFrame: 1350
+  },
+  {
+    text: '47回のコミット',
+    startFrame: 1350,
+    endFrame: 1500
+  },
+  {
+    text: '人間とAIの協業',
+    startFrame: 1500,
+    endFrame: 1650
+  },
+  {
+    text: 'slash-commands.com',
+    startFrame: 1650,
+    endFrame: 1725
+  },
+  {
+    text: 'Claude Code生成動画',
+    startFrame: 1725,
+    endFrame: 1800
   }
 ];
