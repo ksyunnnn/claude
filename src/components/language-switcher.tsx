@@ -20,9 +20,7 @@ export function LanguageSwitcher() {
     startTransition(async () => {
       try {
         await updateUserLocale(newLocale)
-        // Set cookie for immediate UI update
-        document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
-        // Use router.refresh() instead of window.location.reload() for better UX
+        // Refresh the page to apply new locale
         router.refresh()
         setIsUpdating(false)
       } catch (error) {

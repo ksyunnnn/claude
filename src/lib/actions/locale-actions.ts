@@ -1,41 +1,61 @@
 'use server'
 
+import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { Locale } from '@/i18n'
 
 export async function updateUserLocale(locale: Locale) {
-  const supabase = await createClient()
-  
-  const { data: { user }, error: userError } = await supabase.auth.getUser()
-  if (userError || !user) {
-    throw new Error('User not authenticated')
-  }
-
-  // Update user metadata with preferred locale
-  const { error: updateError } = await supabase.auth.updateUser({
-    data: { 
-      preferred_locale: locale 
-    }
+  // Set cookie first (this always works)
+  const cookieStore = await cookies()
+  cookieStore.set('NEXT_LOCALE', locale, {
+    path: '/',
+    maxAge: 60 * 60 * 24 * 365, // 1 year
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production'
   })
 
-  if (updateError) {
-    throw new Error('Failed to update user locale preference')
+  // Try to update user metadata if authenticated (non-blocking)
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (user) {
+      await supabase.auth.updateUser({
+        data: { 
+          preferred_locale: locale 
+        }
+      })
+    }
+  } catch (error) {
+    // Non-blocking: if user metadata update fails, cookie-based approach still works
+    console.warn('Failed to update user metadata, using cookie-only approach:', error)
   }
 
   return { success: true }
 }
 
 export async function getUserLocale(): Promise<Locale> {
-  const supabase = await createClient()
+  // Check cookie first
+  const cookieStore = await cookies()
+  const cookieLocale = cookieStore.get('NEXT_LOCALE')?.value
   
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (user?.user_metadata?.preferred_locale) {
-    const preferredLocale = user.user_metadata.preferred_locale
-    // locales配列に含まれる値のみを返すことで型安全性を保証
-    if (preferredLocale === 'ja' || preferredLocale === 'en') {
-      return preferredLocale
+  if (cookieLocale && (cookieLocale === 'ja' || cookieLocale === 'en')) {
+    return cookieLocale
+  }
+
+  // Fallback to user metadata if authenticated
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (user?.user_metadata?.preferred_locale) {
+      const preferredLocale = user.user_metadata.preferred_locale
+      if (preferredLocale === 'ja' || preferredLocale === 'en') {
+        return preferredLocale
+      }
     }
+  } catch (error) {
+    console.warn('Failed to get user locale from metadata:', error)
   }
   
   return 'ja' // Default locale
