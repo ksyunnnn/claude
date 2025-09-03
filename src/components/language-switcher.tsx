@@ -38,7 +38,6 @@ export function LanguageSwitcher() {
         size="sm"
         onClick={() => handleLocaleChange('ja')}
         disabled={isLoading}
-        className="btn-responsive text-responsive"
       >
         日本語
       </Button>
@@ -48,7 +47,6 @@ export function LanguageSwitcher() {
         size="sm"
         onClick={() => handleLocaleChange('en')}
         disabled={isLoading}
-        className="btn-responsive text-responsive"
       >
         English
       </Button>
