@@ -21,6 +21,8 @@ export default getRequestConfig(async () => {
 
   return {
     locale,
+    // 動的インポートで指定されたロケールの翻訳ファイルを読み込み
+    // messages/ja.json または messages/en.json から翻訳データを取得
     messages: (await import(`../messages/${locale}.json`)).default,
   }
 })

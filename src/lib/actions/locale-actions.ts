@@ -31,7 +31,11 @@ export async function getUserLocale(): Promise<Locale> {
   const { data: { user } } = await supabase.auth.getUser()
   
   if (user?.user_metadata?.preferred_locale) {
-    return user.user_metadata.preferred_locale as Locale
+    const preferredLocale = user.user_metadata.preferred_locale
+    // locales配列に含まれる値のみを返すことで型安全性を保証
+    if (preferredLocale === 'ja' || preferredLocale === 'en') {
+      return preferredLocale
+    }
   }
   
   return 'ja' // Default locale
