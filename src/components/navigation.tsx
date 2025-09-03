@@ -3,10 +3,12 @@ import { LoginButton } from '@/components/auth/login-button'
 import { Button } from '@/components/ui/button'
 import { Code2, Plus, Github } from 'lucide-react'
 import Link from 'next/link'
+import { getNavTranslations } from '@/lib/i18n/server'
 
 export async function Navigation() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const t = await getNavTranslations()
 
   // Get user profile to get username
   let profile = null
@@ -24,40 +26,38 @@ export async function Navigation() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
           <Code2 className="h-6 w-6" />
-          Slash Commands
+          {t('logo')}
         </Link>
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-4 text-responsive">
           {user ? (
             <>
-              <Link href="/new">
-                <Button size="sm">
-                  <Plus className="h-4 w-4 mr-1" />
-                  New Command
+              <Button asChild variant="ghost" size="sm" className="btn-responsive">
+                <Link href="/new" className="flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  {t('newCommand')}
+                </Link>
+              </Button>
+              {profile?.username && (
+                <Button asChild variant="ghost" size="sm" className="btn-responsive">
+                  <Link href={`/${profile.username}`}>
+                    {t('myCommands')}
+                  </Link>
                 </Button>
-              </Link>
-              <Link href={`/${profile?.username || user.id}`}>
-                <Button variant="ghost" size="sm">
-                  My Commands
-                </Button>
-              </Link>
-              <Link href="/settings">
-                <Button variant="ghost" size="sm">
-                  Settings
-                </Button>
-              </Link>
+              )}
+              <Button asChild variant="ghost" size="sm" className="btn-responsive">
+                <Link href="/settings">
+                  {t('settings')}
+                </Link>
+              </Button>
             </>
           ) : (
             <LoginButton />
           )}
-          <Link 
-            href="https://github.com/ksyunnnn/claude" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors ml-2"
-            aria-label="GitHub Repository"
-          >
-            <Github className="h-5 w-5" />
-          </Link>
+          <Button asChild variant="ghost" size="sm" aria-label={t('githubRepository')}>
+            <Link href="https://github.com/ksyunnnn/slash-commands" target="_blank" rel="noopener noreferrer">
+              <Github className="h-4 w-4" />
+            </Link>
+          </Button>
         </nav>
       </div>
     </header>

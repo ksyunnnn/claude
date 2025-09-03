@@ -5,6 +5,7 @@ import { updateUsername, updateProfile } from '@/lib/actions/profile-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useFormTranslations, useMessagesTranslations, useProfileTranslations } from '@/lib/i18n/client'
 
 interface ProfileFormProps {
   profile: {
@@ -15,6 +16,9 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ profile }: ProfileFormProps) {
+  const tForm = useFormTranslations()
+  const tMessages = useMessagesTranslations()
+  const tProfile = useProfileTranslations()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -30,7 +34,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
 
     // Basic client-side validation
     if (formData.username && (formData.username.length < 3 || formData.username.length > 20)) {
-      setError('Username must be 3-20 characters')
+      setError(tMessages('usernameTooShort'))
       return
     }
 
@@ -40,7 +44,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         if (formData.username !== (profile?.username || '')) {
           const usernameResult = await updateUsername(formData.username)
           if (!usernameResult.success) {
-            setError(usernameResult.error || 'Failed to update username')
+            setError(usernameResult.error || tMessages('updateUsernameFailed'))
             return
           }
         }
@@ -49,15 +53,15 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         if (formData.full_name !== (profile?.full_name || '')) {
           const profileResult = await updateProfile(formData.full_name)
           if (!profileResult.success) {
-            setError(profileResult.error || 'Failed to update profile')
+            setError(profileResult.error || tMessages('updateProfileFailed'))
             return
           }
         }
 
-        setSuccess('Profile updated successfully!')
+        setSuccess(tMessages('profileUpdated'))
       } catch (error) {
         console.error('Error updating profile:', error)
-        setError('Failed to update profile')
+        setError(tMessages('updateProfileFailed'))
       }
     })
   }
@@ -77,25 +81,25 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       )}
 
       <div>
-        <Label htmlFor="username">Username</Label>
+        <Label htmlFor="username">{tProfile('username')}</Label>
         <Input
           id="username"
-          placeholder="ksyunnnn"
+          placeholder={tProfile('usernamePlaceholder')}
           value={formData.username}
           onChange={(e) => setFormData({ ...formData, username: e.target.value })}
           className="mt-1"
           disabled={isPending}
         />
         <p className="text-sm text-muted-foreground mt-1">
-          This will be used in your profile URL (e.g., /{formData.username || 'username'})
+          {tProfile('usernameHelp', { username: formData.username || 'username' })}
         </p>
       </div>
 
       <div>
-        <Label htmlFor="full_name">Full Name</Label>
+        <Label htmlFor="full_name">{tProfile('fullName')}</Label>
         <Input
           id="full_name"
-          placeholder="John Doe"
+          placeholder={tProfile('fullNamePlaceholder')}
           value={formData.full_name}
           onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
           className="mt-1"
@@ -104,7 +108,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       </div>
 
       <Button type="submit" disabled={isPending}>
-        {isPending ? 'Saving...' : 'Save Changes'}
+        {isPending ? tForm('saving') : tForm('saveChanges')}
       </Button>
     </form>
   )

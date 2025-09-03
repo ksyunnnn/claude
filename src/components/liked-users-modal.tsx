@@ -12,6 +12,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Users } from 'lucide-react'
 import Link from 'next/link'
+import { useModalTranslations, useProfileTranslations, useCommonTranslations } from '@/lib/i18n/client'
 
 export interface LikedUser {
   user_id: string
@@ -31,12 +32,15 @@ interface LikedUsersModalProps {
 
 export function LikedUsersModal({ likedUsers, likeCount }: LikedUsersModalProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const tModal = useModalTranslations()
+  const tProfile = useProfileTranslations()
+  const tCommon = useCommonTranslations()
 
   // Always show the modal trigger, but update text based on like count
   if (likeCount === 0) {
     return (
       <span className="text-sm text-muted-foreground">
-        No likes yet
+        {tModal('noLikes')}
       </span>
     )
   }
@@ -50,17 +54,17 @@ export function LikedUsersModal({ likedUsers, likeCount }: LikedUsersModalProps)
           className="text-muted-foreground hover:text-foreground"
         >
           <Users className="h-4 w-4 mr-2" />
-          {likeCount} {likeCount === 1 ? 'like' : 'likes'}
+          {likeCount} {likeCount === 1 ? tModal('like') : tModal('likes')}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Liked by</DialogTitle>
+          <DialogTitle>{tModal('likedBy')}</DialogTitle>
         </DialogHeader>
         <div className="max-h-96 overflow-y-auto">
           {likedUsers.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">
-              No likes yet
+              {tModal('noLikes')}
             </p>
           ) : (
             <div className="space-y-3">
@@ -79,7 +83,7 @@ export function LikedUsersModal({ likedUsers, likeCount }: LikedUsersModalProps)
                       onClick={() => setIsOpen(false)}
                     >
                       <p className="font-medium text-sm">
-                        {like.profiles.full_name || like.profiles.username || 'Anonymous'}
+                        {like.profiles.full_name || like.profiles.username || tProfile('anonymousUser')}
                       </p>
                       {like.profiles.username && (
                         <p className="text-muted-foreground text-xs">
@@ -89,7 +93,7 @@ export function LikedUsersModal({ likedUsers, likeCount }: LikedUsersModalProps)
                     </Link>
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {like.created_at ? new Date(like.created_at).toLocaleDateString() : 'No date'}
+                    {like.created_at ? new Date(like.created_at).toLocaleDateString() : tCommon('noDate')}
                   </span>
                 </div>
               ))}

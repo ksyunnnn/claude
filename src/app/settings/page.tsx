@@ -4,10 +4,12 @@ import { ProfileForm } from './profile-form'
 import { LogoutButton } from '@/components/auth/logout-button'
 import { Navigation } from '@/components/navigation'
 import { LanguageSwitcher } from '@/components/language-switcher'
+import { getSettingsTranslations } from '@/lib/i18n/server'
 
 export default async function SettingsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const t = await getSettingsTranslations()
 
   if (!user) {
     redirect('/')
@@ -24,21 +26,21 @@ export default async function SettingsPage() {
       <Navigation />
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <h1 className="text-3xl font-bold mb-8">Settings</h1>
+        <h1 className="text-3xl font-bold mb-8 text-responsive">{t('title')}</h1>
 
         <div className="space-y-8">
           <section>
-            <h2 className="text-xl font-semibold mb-4">Profile</h2>
+            <h2 className="text-xl font-semibold mb-4 text-responsive">{t('profile')}</h2>
             <ProfileForm profile={profile} />
           </section>
 
           <section className="border-t pt-8">
-            <h2 className="text-xl font-semibold mb-4">Language</h2>
+            <h2 className="text-xl font-semibold mb-4 text-responsive">{t('language')}</h2>
             <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div>
-                <p className="font-medium">Language Preference</p>
+              <div className="text-responsive">
+                <p className="font-medium">{t('languagePreference')}</p>
                 <p className="text-sm text-muted-foreground">
-                  Choose your preferred language for the interface
+                  {t('languageDescription')}
                 </p>
               </div>
               <LanguageSwitcher />
@@ -46,12 +48,12 @@ export default async function SettingsPage() {
           </section>
 
           <section className="border-t pt-8">
-            <h2 className="text-xl font-semibold mb-4">Account</h2>
+            <h2 className="text-xl font-semibold mb-4 text-responsive">{t('account')}</h2>
             <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div>
-                <p className="font-medium">Sign out</p>
+              <div className="text-responsive">
+                <p className="font-medium">{t('signOutAction')}</p>
                 <p className="text-sm text-muted-foreground">
-                  Sign out of your account
+                  {t('signOutDescription')}
                 </p>
               </div>
               <LogoutButton />

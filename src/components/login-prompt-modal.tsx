@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Heart, LogIn, Github } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { useModalTranslations, useAuthTranslations } from '@/lib/i18n/client'
 
 interface LoginPromptModalProps {
   isOpen: boolean
@@ -18,30 +19,33 @@ interface LoginPromptModalProps {
 }
 
 export function LoginPromptModal({ isOpen, onOpenChange, actionType = 'like' }: LoginPromptModalProps) {
+  const tModal = useModalTranslations()
+  const tAuth = useAuthTranslations()
+  
   const getActionText = () => {
     switch (actionType) {
       case 'like':
         return {
-          title: 'Sign in to like commands',
-          description: 'Join our community to show appreciation for great commands and discover personalized content.',
+          title: tModal('signInToLike'),
+          description: tModal('signInToLikeDesc'),
           icon: <Heart className="h-6 w-6 text-red-500" />
         }
       case 'follow':
         return {
-          title: 'Sign in to follow users',
-          description: 'Follow users to see their latest commands and build your network.',
+          title: tModal('signInToFollow'),
+          description: tModal('signInToFollowDesc'),
           icon: <LogIn className="h-6 w-6" />
         }
       case 'create':
         return {
-          title: 'Sign in to create commands',
-          description: 'Share your own commands with the community and help others learn.',
+          title: tModal('signInToCreate'),
+          description: tModal('signInToCreateDesc'),
           icon: <LogIn className="h-6 w-6" />
         }
       default:
         return {
-          title: 'Sign in required',
-          description: 'Please sign in to access this feature.',
+          title: tModal('signInRequired'),
+          description: tModal('signInRequiredDesc'),
           icon: <LogIn className="h-6 w-6" />
         }
     }
@@ -77,7 +81,7 @@ export function LoginPromptModal({ isOpen, onOpenChange, actionType = 'like' }: 
             }}
           >
             <Github className="mr-2 h-4 w-4" />
-            Sign in with GitHub
+            {tAuth('signInWithGitHub')}
           </Button>
           
           <Button 
@@ -85,12 +89,12 @@ export function LoginPromptModal({ isOpen, onOpenChange, actionType = 'like' }: 
             className="w-full" 
             onClick={() => onOpenChange(false)}
           >
-            Maybe later
+            {tModal('maybeLater')}
           </Button>
         </div>
         
         <p className="text-center text-xs text-muted-foreground mt-4">
-          Free to join • Takes less than a minute
+          {tAuth('freeToJoin')}
         </p>
       </DialogContent>
     </Dialog>

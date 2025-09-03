@@ -6,6 +6,7 @@ import { getFollowing } from '@/lib/actions/follow-actions'
 import FollowButton from '@/components/follow-button'
 import { getUserByIdentifier } from '@/lib/user-utils'
 import type { FollowingWithProfile } from '@/types/supabase'
+import { getFollowPageTranslations, getProfileTranslations } from '@/lib/i18n/server'
 
 interface FollowingPageProps {
   params: Promise<{ username: string }>
@@ -14,6 +15,8 @@ interface FollowingPageProps {
 export default async function FollowingPage({ params }: FollowingPageProps) {
   const { username } = await params
   const supabase = await createClient()
+  const tFollowPage = await getFollowPageTranslations()
+  const tProfile = await getProfileTranslations()
 
   // Get user profile by username or ID
   const profile = await getUserByIdentifier(username)
@@ -37,7 +40,7 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
               href={`/${username}`}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              ← Back to profile
+{tFollowPage('backToProfile')}
             </Link>
           </div>
           <div className="flex items-center gap-4">
@@ -52,10 +55,10 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
             )}
             <div>
               <h1 className="text-2xl font-bold">
-                {profile.full_name || profile.username || 'Anonymous'}
+                {profile.full_name || profile.username || tProfile('anonymousUser')}
               </h1>
               <p className="text-muted-foreground">
-                Following {following.length} user{following.length !== 1 ? 's' : ''}
+                {tFollowPage('followingCount', { count: following.length })}
               </p>
             </div>
           </div>
@@ -64,7 +67,7 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
         {/* Following List */}
         {following.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Not following anyone yet</p>
+            <p className="text-muted-foreground">{tFollowPage('notFollowingAnyone')}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -92,7 +95,7 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
                     )}
                     <div>
                       <h3 className="font-medium">
-                        {followingProfile.full_name || followingProfile.username || 'Anonymous'}
+                        {followingProfile.full_name || followingProfile.username || tProfile('anonymousUser')}
                       </h3>
                       {followingProfile.username && followingProfile.full_name && (
                         <p className="text-sm text-muted-foreground">
