@@ -3,8 +3,11 @@
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Github } from 'lucide-react'
+import { useAuthTranslations } from '@/lib/i18n/client'
 
 export function LoginButton() {
+  const t = useAuthTranslations()
+  
   const handleLogin = async () => {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
@@ -16,9 +19,9 @@ export function LoginButton() {
   }
 
   return (
-    <Button onClick={handleLogin} variant="outline">
+    <Button onClick={handleLogin} variant="outline" className="btn-responsive text-responsive">
       <Github className="mr-2 h-4 w-4" />
-      Sign in with GitHub
+      {t('signInWithGitHub')}
     </Button>
   )
 }

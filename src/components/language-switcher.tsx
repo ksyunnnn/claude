@@ -1,15 +1,13 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { useLocale } from 'next-intl'
-import { useRouter } from 'next/navigation'
 import { Locale } from '@/i18n'
 import { Button } from '@/components/ui/button'
 import { updateUserLocale } from '@/lib/actions/locale-actions'
+import { useLocale } from '@/lib/i18n/client'
 
 export function LanguageSwitcher() {
   const locale = useLocale() as Locale
-  const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isUpdating, setIsUpdating] = useState(false)
 
@@ -20,9 +18,10 @@ export function LanguageSwitcher() {
     startTransition(async () => {
       try {
         await updateUserLocale(newLocale)
-        // Refresh the page to apply new locale
-        router.refresh()
-        setIsUpdating(false)
+        // Set cookie for immediate UI update
+        document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+        // Force page reload to apply new locale
+        window.location.reload()
       } catch (error) {
         console.error('Failed to update locale:', error)
         setIsUpdating(false)

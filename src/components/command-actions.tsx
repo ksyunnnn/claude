@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Copy } from 'lucide-react'
+import { useActionsTranslations } from '@/lib/i18n/client'
 
 interface CommandActionsProps {
   content: string
@@ -10,6 +11,7 @@ interface CommandActionsProps {
 
 export function CommandActions({ content }: CommandActionsProps) {
   const [copied, setCopied] = useState(false)
+  const tActions = useActionsTranslations()
 
   const handleCopy = async () => {
     try {
@@ -29,7 +31,7 @@ export function CommandActions({ content }: CommandActionsProps) {
       className="gap-1"
     >
       <Copy className="h-3 w-3" />
-      {copied ? 'Copied!' : 'Copy'}
+      {copied ? tActions('copied') : tActions('copy')}
     </Button>
   )
 }

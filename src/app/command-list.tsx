@@ -1,10 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Code2, User } from 'lucide-react'
+import { getEmptyTranslations, getCommonTranslations } from '@/lib/i18n/server'
 import type { CommandWithUser } from '@/types/database'
 
 export async function CommandList() {
   const supabase = await createClient()
+  const tEmpty = await getEmptyTranslations()
+  const tCommon = await getCommonTranslations()
   
   const { data: commands } = await supabase
     .from('commands')
@@ -23,7 +26,7 @@ export async function CommandList() {
     return (
       <div className="border rounded-lg p-6">
         <p className="text-muted-foreground text-center py-8">
-          No commands yet. Be the first to share!
+          {tEmpty('noCommandsCreate')}
         </p>
       </div>
     )
@@ -32,7 +35,7 @@ export async function CommandList() {
   return (
     <div className="grid gap-4">
       {commands.map((command: CommandWithUser) => {
-        const authorName = command.profiles?.full_name || command.profiles?.username || 'Anonymous'
+        const authorName = command.profiles?.full_name || command.profiles?.username || tCommon('anonymousUser')
         const profilePath = command.profiles?.username || command.user_id
         
         return (
@@ -59,7 +62,7 @@ export async function CommandList() {
                   </span>
                   <span className="text-sm text-muted-foreground">·</span>
                   <span className="text-sm text-muted-foreground">
-                    {command.created_at ? new Date(command.created_at).toLocaleDateString() : 'No date'}
+                    {command.created_at ? new Date(command.created_at).toLocaleDateString() : tCommon('noDate')}
                   </span>
                 </div>
               </div>

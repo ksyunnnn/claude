@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import type { Command } from '@/types/database'
+import { useCommandTranslations, useFormTranslations, useMessagesTranslations } from '@/lib/i18n/client'
 
 interface EditCommandFormProps {
   command: Command
@@ -19,6 +20,9 @@ interface EditCommandFormProps {
 
 export function EditCommandForm({ command, username }: EditCommandFormProps) {
   const router = useRouter()
+  const tCommand = useCommandTranslations()
+  const tForm = useFormTranslations()
+  const tMessages = useMessagesTranslations()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: command.name,
@@ -50,17 +54,17 @@ export function EditCommandForm({ command, username }: EditCommandFormProps) {
 
       router.back()
       router.refresh()
-      alert('Command updated successfully')
+      alert(tMessages('commandUpdated'))
     } catch (error) {
       console.error('Error updating command:', error)
-      alert('Failed to update command')
+      alert(tMessages('updateCommandFailed'))
     } finally {
       setLoading(false)
     }
   }
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this command? This action cannot be undone.')) {
+    if (!confirm(tMessages('deleteConfirm'))) {
       return
     }
 
@@ -81,10 +85,10 @@ export function EditCommandForm({ command, username }: EditCommandFormProps) {
       const profilePath = username || command.user_id
       router.push(`/${profilePath}`)
       router.refresh()
-      alert('Command deleted successfully')
+      alert(tMessages('commandDeleted'))
     } catch (error) {
       console.error('Error deleting command:', error)
-      alert('Failed to delete command')
+      alert(tMessages('deleteCommandFailed'))
     } finally {
       setLoading(false)
     }
@@ -94,12 +98,12 @@ export function EditCommandForm({ command, username }: EditCommandFormProps) {
     <>
       <Link href={`/${username || command.user_id}/${command.slug}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="h-4 w-4" />
-        Back to command
+        {tCommand('backToCommand')}
       </Link>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <Label htmlFor="name">Command Name</Label>
+          <Label htmlFor="name">{tForm('commandName')}</Label>
           <Input
             id="name"
             required
@@ -110,10 +114,10 @@ export function EditCommandForm({ command, username }: EditCommandFormProps) {
         </div>
 
         <div>
-          <Label htmlFor="description">Description (Optional)</Label>
+          <Label htmlFor="description">{tForm('description')}</Label>
           <Input
             id="description"
-            placeholder="Brief description of what this command does"
+            placeholder={tForm('descriptionPlaceholder')}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             className="mt-1"
@@ -121,7 +125,7 @@ export function EditCommandForm({ command, username }: EditCommandFormProps) {
         </div>
 
         <div>
-          <Label htmlFor="content">Command Content</Label>
+          <Label htmlFor="content">{tForm('commandContent')}</Label>
           <Textarea
             id="content"
             required
@@ -139,20 +143,20 @@ export function EditCommandForm({ command, username }: EditCommandFormProps) {
               onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
             />
             <Label htmlFor="public" className="cursor-pointer">
-              Make this command public
+              {tForm('makePublic')}
             </Label>
           </div>
         </div>
 
         <div className="flex gap-4">
           <Button type="submit" disabled={loading}>
-            {loading ? 'Saving...' : 'Save Changes'}
+            {loading ? tForm('saving') : tForm('saveChanges')}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>
-            Cancel
+            {tForm('cancel')}
           </Button>
           <Button type="button" variant="destructive" onClick={handleDelete} disabled={loading}>
-            Delete Command
+            {tForm('deleteCommand')}
           </Button>
         </div>
       </form>

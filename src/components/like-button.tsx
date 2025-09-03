@@ -3,6 +3,7 @@
 import { useOptimistic, useTransition, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Heart } from 'lucide-react'
+import { useActionsTranslations } from '@/lib/i18n/client'
 import { likeCommand, unlikeCommand } from '@/lib/actions/like-actions'
 import { LoginPromptModal } from '@/components/login-prompt-modal'
 
@@ -17,6 +18,7 @@ interface LikeButtonProps {
 export function LikeButton({ commandId, initialIsLiked, initialLikeCount, disabled = false, isAuthenticated = false }: LikeButtonProps) {
   const [isPending, startTransition] = useTransition()
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const tActions = useActionsTranslations()
   const [optimisticState, setOptimisticState] = useOptimistic(
     { isLiked: initialIsLiked, likeCount: initialLikeCount },
     (currentState, { isLiked, likeCount }: { isLiked: boolean, likeCount: number }) => ({
@@ -78,13 +80,13 @@ export function LikeButton({ commandId, initialIsLiked, initialLikeCount, disabl
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
         aria-label={
           isAuthenticated 
-            ? (optimisticState.isLiked ? `Unlike this command (${optimisticState.likeCount} likes)` : `Like this command (${optimisticState.likeCount} likes)`)
-            : `Sign in to like this command (${optimisticState.likeCount} likes)`
+            ? (optimisticState.isLiked ? tActions('unlikeCommand', { count: optimisticState.likeCount }) : tActions('likeCommand', { count: optimisticState.likeCount }))
+            : tActions('likeCommand', { count: optimisticState.likeCount })
         }
         title={
           isAuthenticated 
             ? undefined
-            : "Sign in to like this command"
+            : tActions('signInToLike')
         }
       >
         <Heart 
