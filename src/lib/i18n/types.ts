@@ -159,8 +159,6 @@ export interface CommonTranslation {
   commandNotFound: string;
   anonymousUser: string;
   backToHome: string;
-  languageSwitching: string;
-  languageSwitchingDesc: string;
 }
 
 // メイン翻訳インターフェース

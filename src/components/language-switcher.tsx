@@ -104,7 +104,8 @@ export function LanguageSwitcher() {
       
       {/* Full-screen loading overlay during language switch */}
       <LanguageSwitchingOverlay 
-        isVisible={isUpdating} 
+        isVisible={isUpdating}
+        locale={locale}
       />
     </>
   )

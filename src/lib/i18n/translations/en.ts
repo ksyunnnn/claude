@@ -144,8 +144,6 @@ export const en = {
     userNotFound: "User Not Found",
     commandNotFound: "Command Not Found",
     anonymousUser: "Anonymous User",
-    backToHome: "Back to home",
-    languageSwitching: "Switching language...",
-    languageSwitchingDesc: "Please wait a moment"
+    backToHome: "Back to home"
   }
 } as const satisfies Translation;
