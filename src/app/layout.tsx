@@ -4,6 +4,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
+import { LanguageProvider } from '@/components/language-context';
+import { BodyWrapper } from '@/components/body-wrapper';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -78,17 +80,19 @@ export default async function RootLayout({
   
   return (
     <html lang={locale}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${notoSansJP.variable} antialiased`}
-      >
+      <LanguageProvider>
         <NextIntlClientProvider 
           locale={locale}
           messages={messages}
         >
-          {children}
-          <Toaster />
+          <BodyWrapper
+            className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${notoSansJP.variable} antialiased`}
+          >
+            {children}
+            <Toaster />
+          </BodyWrapper>
         </NextIntlClientProvider>
-      </body>
+      </LanguageProvider>
     </html>
   );
 }

@@ -104,15 +104,7 @@ export default async function UserPage({ params }: UserPageProps) {
     commandsQuery = commandsQuery.eq('is_public', true)
   }
   
-  const { data: commands, error } = await commandsQuery.order('created_at', { ascending: false })
-  
-  // Debug logging
-  console.log('Debug info:')
-  console.log('username:', username)
-  console.log('userId:', userId)
-  console.log('isOwnProfile:', isOwnProfile)
-  console.log('commands:', commands)
-  console.log('error:', error)
+  const { data: commands } = await commandsQuery.order('created_at', { ascending: false })
 
   return (
     <div className="min-h-screen">

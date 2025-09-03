@@ -1,18 +1,18 @@
 'use client'
 
-import { useState, useTransition, useEffect, useRef, useCallback } from 'react'
+import { useTransition, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Locale } from '@/i18n'
 import { Button } from '@/components/ui/button'
-import { LanguageSwitchingOverlay } from '@/components/ui/language-switching-overlay'
 import { updateUserLocale } from '@/lib/actions/locale-actions'
 import { useLocale } from '@/lib/i18n/client'
+import { useLanguageContext } from './language-context'
 
 export function LanguageSwitcher() {
   const locale = useLocale() as Locale
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const [isUpdating, setIsUpdating] = useState(false)
+  const { isLanguageSwitching, setIsLanguageSwitching } = useLanguageContext()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const mountedRef = useRef(true)
 
@@ -23,33 +23,22 @@ export function LanguageSwitcher() {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
-      // Always clean up DOM state on unmount
-      document.body.style.overflow = ''
-      document.body.classList.remove('switching-language')
     }
   }, [])
 
-  // Handle body scroll and class changes
-  useEffect(() => {
-    if (isUpdating) {
-      document.body.style.overflow = 'hidden'
-      document.body.classList.add('switching-language')
-    } else {
-      document.body.style.overflow = ''
-      document.body.classList.remove('switching-language')
-    }
-  }, [isUpdating])
-
   const handleLocaleChange = useCallback((newLocale: Locale) => {
     // Prevent multiple concurrent locale changes
-    if (newLocale === locale || isUpdating) return
+    if (newLocale === locale || isLanguageSwitching) return
+    
+    console.log('🔄 Starting language switch:', { from: locale, to: newLocale })
     
     // Clear any existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
     
-    setIsUpdating(true)
+    setIsLanguageSwitching(true)
+    console.log('✅ Set isLanguageSwitching to true')
     
     startTransition(async () => {
       try {
@@ -64,19 +53,20 @@ export function LanguageSwitcher() {
         // Keep overlay visible for smooth transition completion
         timeoutRef.current = setTimeout(() => {
           if (mountedRef.current) {
-            setIsUpdating(false)
+            setIsLanguageSwitching(false)
+            console.log('✅ Language switching completed')
           }
         }, 800)
       } catch (error) {
         console.error('Failed to update locale:', error)
         if (mountedRef.current) {
-          setIsUpdating(false)
+          setIsLanguageSwitching(false)
         }
       }
     })
-  }, [locale, isUpdating, router])
+  }, [locale, isLanguageSwitching, setIsLanguageSwitching, router])
 
-  const isLoading = isPending || isUpdating
+  const isLoading = isPending || isLanguageSwitching
 
   return (
     <>
@@ -103,10 +93,23 @@ export function LanguageSwitcher() {
       </div>
       
       {/* Full-screen loading overlay during language switch */}
-      <LanguageSwitchingOverlay 
-        isVisible={isUpdating}
-        locale={locale}
-      />
+      {isLanguageSwitching && (
+        <div className="fixed inset-0 z-[9999] bg-slate-900/90 backdrop-blur-md flex items-center justify-center">
+          <div className="flex flex-col items-center gap-6 text-center px-8">
+            <div className="relative">
+              <div className="h-12 w-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+            </div>
+            <div className="flex flex-col gap-3">
+              <p className="text-2xl font-bold text-white tracking-wide drop-shadow-lg">
+                {locale === 'ja' ? '言語切り替え中...' : 'Switching language...'}
+              </p>
+              <p className="text-base text-slate-200 max-w-48 drop-shadow-md">
+                {locale === 'ja' ? 'しばらくお待ちください' : 'Please wait a moment'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
