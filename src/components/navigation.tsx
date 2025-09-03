@@ -31,19 +31,18 @@ export async function Navigation() {
         <nav className="flex items-center gap-4 text-responsive">
           {user ? (
             <>
-              <Button asChild variant="ghost" size="sm" className="btn-responsive">
+              <Button asChild size="sm" className="btn-responsive">
                 <Link href="/new" className="flex items-center gap-2">
                   <Plus className="h-4 w-4" />
                   {t('newCommand')}
                 </Link>
               </Button>
-              {profile?.username && (
                 <Button asChild variant="ghost" size="sm" className="btn-responsive">
-                  <Link href={`/${profile.username}`}>
+                  <Link href={`/${profile?.username || user.id}}`}>
                     {t('myCommands')}
                   </Link>
                 </Button>
-              )}
+              
               <Button asChild variant="ghost" size="sm" className="btn-responsive">
                 <Link href="/settings">
                   {t('settings')}

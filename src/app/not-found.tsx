@@ -23,7 +23,7 @@ export default async function NotFound() {
         
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/">
-            <Button className="w-full sm:w-auto btn-responsive text-responsive">
+            <Button className="w-full sm:w-auto btn-responsive ">
               <Home className="h-4 w-4 mr-2" />
               {t('backToHome')}
             </Button>
