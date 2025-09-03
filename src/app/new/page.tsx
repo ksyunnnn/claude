@@ -2,10 +2,12 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { CommandForm } from './command-form'
 import { Navigation } from '@/components/navigation'
+import { getNewCommandTranslations } from '@/lib/i18n/server'
 
 export default async function NewCommandPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const tNew = await getNewCommandTranslations()
 
   if (!user) {
     redirect('/')
@@ -23,7 +25,7 @@ export default async function NewCommandPage() {
       <Navigation />
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <h1 className="text-3xl font-bold mb-8">Create New Command</h1>
+        <h1 className="text-3xl font-bold mb-8">{tNew('title')}</h1>
         <CommandForm userId={user.id} username={profile?.username} />
       </main>
     </div>

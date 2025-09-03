@@ -11,6 +11,7 @@ import { getLikeCount, getLikeStatus, getLikedUsers } from '@/lib/actions/like-a
 import { isAuthenticated } from '@/lib/auth-utils'
 import { LikeErrorHandler } from '@/components/like-error-handler'
 import type { Metadata } from 'next'
+import { getCommandTranslations, getCommonTranslations, getMetadataTranslations } from '@/lib/i18n/server'
 
 interface CommandPageProps {
   params: Promise<{ username: string; commandSlug: string }>
@@ -18,6 +19,9 @@ interface CommandPageProps {
 
 export async function generateMetadata({ params }: CommandPageProps): Promise<Metadata> {
   const { username, commandSlug } = await params
+  const tCommon = await getCommonTranslations()
+  const tMetadata = await getMetadataTranslations()
+  const tCommand = await getCommandTranslations()
   const supabase = await createClient()
   
   // Get user profile by username or ID
@@ -45,13 +49,13 @@ export async function generateMetadata({ params }: CommandPageProps): Promise<Me
 
   if (!command) {
     return {
-      title: 'Command Not Found',
+      title: tCommon('commandNotFound'),
     }
   }
 
-  const authorName = command.profiles?.full_name || command.profiles?.username || 'Anonymous'
-  const title = `${command.name} by ${authorName} - Slash Commands`
-  const description = command.description || `A slash command by ${authorName}`
+  const authorName = command.profiles?.full_name || command.profiles?.username || tCommon('anonymousUser')
+  const title = `${command.name} ${tCommand('by')} ${authorName} - ${tMetadata('siteName')}`
+  const description = command.description || `${tCommand('by')} ${authorName}`
   const url = `/${username}/${commandSlug}`
 
   return {
@@ -61,7 +65,7 @@ export async function generateMetadata({ params }: CommandPageProps): Promise<Me
       title,
       description,
       url,
-      siteName: 'Slash Commands',
+      siteName: tMetadata('siteName'),
       images: [
         {
           url: `/${username}/${commandSlug}/opengraph-image`,
@@ -85,6 +89,8 @@ export async function generateMetadata({ params }: CommandPageProps): Promise<Me
 export default async function CommandPage({ params }: CommandPageProps) {
   const { username, commandSlug } = await params
   const supabase = await createClient()
+  const tCommand = await getCommandTranslations()
+  const tCommon = await getCommonTranslations()
   
   // Get user profile by username or ID
   const profile = await getUserByIdentifier(username)
@@ -113,14 +119,14 @@ export default async function CommandPage({ params }: CommandPageProps) {
     notFound()
   }
 
-  const authorName = command.profiles?.full_name || command.profiles?.username || 'Anonymous'
+  const authorName = command.profiles?.full_name || command.profiles?.username || tCommon('anonymousUser')
 
   // Get like data for the command
   let likeCount = 0
   let userIsLiked = false
   let likedUsers: LikedUser[] = []
   let hasLikeError = false
-  let likeErrorMessage = ''
+  const likeErrorMessage = ''
   const userIsAuthenticated = await isAuthenticated()
   
   try {
@@ -129,7 +135,8 @@ export default async function CommandPage({ params }: CommandPageProps) {
     likedUsers = await getLikedUsers(command.id)
   } catch (error) {
     hasLikeError = true
-    likeErrorMessage = 'いいね機能が一時的に利用できません'
+    // This error message is already handled by LikeErrorHandler component
+    // likeErrorMessage = 'いいね機能が一時的に利用できません'
     
     if (process.env.NODE_ENV === 'development') {
       console.error('Like data fetch failed:', error)
@@ -143,7 +150,7 @@ export default async function CommandPage({ params }: CommandPageProps) {
         <div className="container mx-auto px-4 py-4">
           <Link href={`/${username}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
-            Back to {authorName}&apos;s commands
+            {tCommand('backToCommands', { username: authorName })}
           </Link>
         </div>
       </header>
@@ -157,7 +164,7 @@ export default async function CommandPage({ params }: CommandPageProps) {
                 <p className="text-muted-foreground">{command.description}</p>
               )}
               <p className="text-sm text-muted-foreground mt-2">
-                by <Link href={`/${username}`} className="hover:underline">{authorName}</Link>
+                {tCommand('by')} <Link href={`/${username}`} className="hover:underline">{authorName}</Link>
               </p>
               
               {/* Like functionality - Always visible for all users */}
@@ -179,7 +186,7 @@ export default async function CommandPage({ params }: CommandPageProps) {
                 <Link href={`/${username}/${commandSlug}/edit`}>
                   <Button variant="outline" size="sm">
                     <Edit className="h-4 w-4 mr-1" />
-                    Edit
+                    {tCommand('edit')}
                   </Button>
                 </Link>
               </div>
@@ -189,7 +196,7 @@ export default async function CommandPage({ params }: CommandPageProps) {
 
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Command Content</h2>
+            <h2 className="text-lg font-semibold">{tCommand('content')}</h2>
             <CommandActions content={command.content} />
           </div>
           <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
@@ -198,12 +205,12 @@ export default async function CommandPage({ params }: CommandPageProps) {
         </div>
 
         <div className="mt-8 pt-8 border-t">
-          <h2 className="text-lg font-semibold mb-4">How to use</h2>
+          <h2 className="text-lg font-semibold mb-4">{tCommand('howToUse')}</h2>
           <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-            <li>Copy the command content above</li>
-            <li>Create a file named <code className="bg-muted px-1 rounded">{command.slug}</code> in your <code className="bg-muted px-1 rounded">.claude/commands</code> directory</li>
-            <li>Paste the content and save the file</li>
-            <li>Use <code className="bg-muted px-1 rounded">/{command.slug}</code> in Claude Code to run this command</li>
+            <li>{tCommand('instruction1')}</li>
+            <li>{tCommand('instruction2', { filename: command.slug })}</li>
+            <li>{tCommand('instruction3')}</li>
+            <li>{tCommand('instruction4', { commandName: command.slug })}</li>
           </ol>
         </div>
       </main>

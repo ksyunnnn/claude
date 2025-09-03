@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import { EditCommandForm } from '@/components/edit-command-form'
 import { getUserByIdentifier } from '@/lib/user-utils'
+import { getEditCommandTranslations } from '@/lib/i18n/server'
 
 interface EditCommandPageProps {
   params: Promise<{ username: string; commandSlug: string }>
@@ -10,6 +11,7 @@ interface EditCommandPageProps {
 export default async function EditCommandPage({ params }: EditCommandPageProps) {
   const { username, commandSlug } = await params
   const supabase = await createClient()
+  const tEditCommand = await getEditCommandTranslations()
   
   // Get user profile by username or ID
   const profile = await getUserByIdentifier(username)
@@ -39,7 +41,7 @@ export default async function EditCommandPage({ params }: EditCommandPageProps) 
     <div className="min-h-screen">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold">Edit Command</h1>
+          <h1 className="text-2xl font-bold">{tEditCommand('title')}</h1>
         </div>
       </header>
 

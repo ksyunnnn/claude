@@ -3,6 +3,7 @@
 import { useOptimistic, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { followUser, unfollowUser } from '@/lib/actions/follow-actions'
+import { useActionsTranslations } from '@/lib/i18n/client'
 
 interface FollowButtonProps {
   userId: string
@@ -12,6 +13,7 @@ interface FollowButtonProps {
 
 export function FollowButton({ userId, initialIsFollowing, disabled = false }: FollowButtonProps) {
   const [isPending, startTransition] = useTransition()
+  const tActions = useActionsTranslations()
   const [optimisticIsFollowing, setOptimisticIsFollowing] = useOptimistic(
     initialIsFollowing,
     (currentState: boolean, newState: boolean) => newState
@@ -68,9 +70,9 @@ export function FollowButton({ userId, initialIsFollowing, disabled = false }: F
           </svg>
         </span>
       ) : optimisticIsFollowing ? (
-        'Following'
+        tActions('following')
       ) : (
-        'Follow'
+        tActions('follow')
       )}
     </Button>
   )

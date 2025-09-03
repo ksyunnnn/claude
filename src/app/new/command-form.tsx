@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { useFormTranslations, useNewCommandTranslations, useMessagesTranslations } from '@/lib/i18n/client'
 
 interface CommandFormProps {
   userId: string
@@ -18,6 +19,9 @@ interface CommandFormProps {
 
 export function CommandForm({ userId, username }: CommandFormProps) {
   const router = useRouter()
+  const tForm = useFormTranslations()
+  const tNew = useNewCommandTranslations()
+  const tMessages = useMessagesTranslations()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -54,7 +58,7 @@ export function CommandForm({ userId, username }: CommandFormProps) {
 
       if (error) {
         if (error.code === '23505') {
-          alert('You already have a command with this name')
+          alert(tMessages('duplicateCommand'))
         } else {
           throw error
         }
@@ -66,7 +70,7 @@ export function CommandForm({ userId, username }: CommandFormProps) {
       router.refresh()
     } catch (error) {
       console.error('Error creating command:', error)
-      alert('Failed to create command')
+      alert(tMessages('createFailed'))
     } finally {
       setLoading(false)
     }
@@ -76,30 +80,33 @@ export function CommandForm({ userId, username }: CommandFormProps) {
     <>
       <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="h-4 w-4" />
-        Back to home
+{tNew('backToHome')}
       </Link>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <Label htmlFor="name">Command Name</Label>
+          <Label htmlFor="name">{tForm('commandName')}</Label>
           <Input
             id="name"
             required
-            placeholder="e.g., create-react-component"
+            placeholder={tForm('commandNamePlaceholder')}
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="mt-1"
           />
           <p className="text-sm text-muted-foreground mt-1">
-            This will be used in the URL as: /{username || userId}/{generateSlug(formData.name) || 'command-name'}
+            {tForm('urlPreview', { 
+              username: username || userId, 
+              slug: generateSlug(formData.name) || 'command-name' 
+            })}
           </p>
         </div>
 
         <div>
-          <Label htmlFor="description">Description (Optional)</Label>
+          <Label htmlFor="description">{tForm('description')}</Label>
           <Input
             id="description"
-            placeholder="Brief description of what this command does"
+            placeholder={tForm('descriptionPlaceholder')}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             className="mt-1"
@@ -107,11 +114,11 @@ export function CommandForm({ userId, username }: CommandFormProps) {
         </div>
 
         <div>
-          <Label htmlFor="content">Command Content</Label>
+          <Label htmlFor="content">{tForm('commandContent')}</Label>
           <Textarea
             id="content"
             required
-            placeholder="Paste your command content here..."
+            placeholder={tForm('contentPlaceholder')}
             value={formData.content}
             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
             className="mt-1 font-mono text-sm min-h-[300px]"
@@ -126,17 +133,17 @@ export function CommandForm({ userId, username }: CommandFormProps) {
               onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
             />
             <Label htmlFor="public" className="cursor-pointer">
-              Make this command public
+              {tForm('makePublic')}
             </Label>
           </div>
         </div>
 
         <div className="flex gap-4">
           <Button type="submit" disabled={loading}>
-            {loading ? 'Creating...' : 'Create Command'}
+            {loading ? tForm('creating') : tForm('create')}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>
-            Cancel
+            {tForm('cancel')}
           </Button>
         </div>
       </form>

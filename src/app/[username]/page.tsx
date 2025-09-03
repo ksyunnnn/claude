@@ -8,6 +8,7 @@ import { getFollowStatus, getFollowCounts } from '@/lib/actions/follow-actions'
 import { getUserByIdentifier } from '@/lib/user-utils'
 import type { Command } from '@/types/database'
 import type { Metadata } from 'next'
+import { getProfileTranslations, getCommonTranslations, getMetadataTranslations } from '@/lib/i18n/server'
 
 interface UserPageProps {
   params: Promise<{ username: string }>
@@ -16,12 +17,15 @@ interface UserPageProps {
 export async function generateMetadata({ params }: UserPageProps): Promise<Metadata> {
   const { username } = await params
   const supabase = await createClient()
+  const tProfile = await getProfileTranslations()
+  const tCommon = await getCommonTranslations()
+  const tMetadata = await getMetadataTranslations()
   
   // Get user profile by username or ID
   const profile = await getUserByIdentifier(username)
   if (!profile) {
     return {
-      title: 'User Not Found',
+      title: tCommon('userNotFound'),
     }
   }
 
@@ -37,8 +41,8 @@ export async function generateMetadata({ params }: UserPageProps): Promise<Metad
     .eq('user_id', userId)
     .eq('is_public', true)
 
-  const userName = profile.full_name || profile.username || 'Anonymous User'
-  const title = `${userName} - Slash Commands`
+  const userName = profile.full_name || profile.username || tProfile('anonymousUser')
+  const title = `${userName} - ${tMetadata('siteName')}`
   const description = `${userName} has ${commandCount || 0} public slash commands, ${followers} followers, and is following ${following} users.`
   const url = `/${username}`
 
@@ -49,7 +53,7 @@ export async function generateMetadata({ params }: UserPageProps): Promise<Metad
       title,
       description,
       url,
-      siteName: 'Slash Commands',
+      siteName: tMetadata('siteName'),
       images: [
         {
           url: `/opengraph-image?title=${encodeURIComponent(userName)}&followers=${followers}&following=${following}&commands=${commandCount || 0}`,
@@ -73,6 +77,8 @@ export async function generateMetadata({ params }: UserPageProps): Promise<Metad
 export default async function UserPage({ params }: UserPageProps) {
   const { username } = await params
   const supabase = await createClient()
+  const tProfile = await getProfileTranslations()
+  const tCommon = await getCommonTranslations()
   
   // Get user profile by username or ID
   const profile = await getUserByIdentifier(username)
@@ -98,15 +104,7 @@ export default async function UserPage({ params }: UserPageProps) {
     commandsQuery = commandsQuery.eq('is_public', true)
   }
   
-  const { data: commands, error } = await commandsQuery.order('created_at', { ascending: false })
-  
-  // Debug logging
-  console.log('Debug info:')
-  console.log('username:', username)
-  console.log('userId:', userId)
-  console.log('isOwnProfile:', isOwnProfile)
-  console.log('commands:', commands)
-  console.log('error:', error)
+  const { data: commands } = await commandsQuery.order('created_at', { ascending: false })
 
   return (
     <div className="min-h-screen">
@@ -114,7 +112,7 @@ export default async function UserPage({ params }: UserPageProps) {
         <div className="container mx-auto px-4 py-4">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
-            Back to home
+{tCommon('backToHome')}
           </Link>
         </div>
       </header>
@@ -134,7 +132,7 @@ export default async function UserPage({ params }: UserPageProps) {
               )}
               <div>
                 <h1 className="text-3xl font-bold mb-2">
-                  {profile.full_name || profile.username || 'Anonymous User'}
+                  {profile.full_name || profile.username || tProfile('anonymousUser')}
                 </h1>
                 {profile.username && (
                   <p className="text-muted-foreground">@{profile.username}</p>
@@ -157,20 +155,20 @@ export default async function UserPage({ params }: UserPageProps) {
             >
               <Users className="h-4 w-4" />
               <span className="font-semibold">{followers}</span>
-              <span className="text-muted-foreground">follower{followers !== 1 ? 's' : ''}</span>
+              <span className="text-muted-foreground">{followers !== 1 ? tProfile('followers') : tProfile('follower')}</span>
             </Link>
             <Link
               href={`/${username}/following`}
               className="flex items-center gap-1 hover:underline"
             >
               <span className="font-semibold">{following}</span>
-              <span className="text-muted-foreground">following</span>
+              <span className="text-muted-foreground">{tProfile('following')}</span>
             </Link>
           </div>
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold mb-4">Commands</h2>
+          <h2 className="text-xl font-semibold mb-4">{tProfile('commands')}</h2>
           <div className="grid gap-4">
             {commands && commands.length > 0 ? (
               commands.map((command: Command) => (
@@ -203,7 +201,7 @@ export default async function UserPage({ params }: UserPageProps) {
               ))
             ) : (
               <p className="text-muted-foreground text-center py-8 border rounded-lg">
-                No commands yet
+                {tProfile('noCommands')}
               </p>
             )}
           </div>

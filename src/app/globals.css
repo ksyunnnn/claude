@@ -68,6 +68,8 @@
   --radius: var(--radius);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-inter: var(--font-inter);
+  --font-noto-jp: var(--font-noto-jp);
 }
 
 * {
@@ -78,4 +80,78 @@ body {
   background-color: theme(colors.background);
   color: theme(colors.foreground);
   font-family: theme(fontFamily.sans);
+}
+
+/* Prevent flash of unstyled content during language switching */
+body.switching-language * {
+  transition: none !important;
+  animation-duration: 0s !important;
+}
+
+/* Hide main content during language switching to prevent flicker */
+body.switching-language > :not(.language-switching-overlay) {
+  visibility: hidden;
+}
+
+/* Smooth transitions for all elements during normal operation */
+* {
+  transition: font-family 0.2s ease-in-out;
+}
+
+/* Critical CSS for immediate font rendering */
+html[lang="ja"] {
+  font-feature-settings: "kern" 1;
+  text-rendering: optimizeLegibility;
+}
+
+html[lang="en"] {
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* Language-specific font classes */
+.font-ja {
+  font-family: var(--font-noto-jp);
+}
+
+.font-en {
+  font-family: var(--font-inter);
+}
+
+/* Dynamic font based on HTML lang attribute with smooth transitions */
+html[lang="ja"] body {
+  font-family: var(--font-noto-jp);
+  transition: font-family 0.2s ease-in-out;
+}
+
+html[lang="en"] body {
+  font-family: var(--font-inter);
+  transition: font-family 0.2s ease-in-out;
+}
+
+/* Responsive text adjustments for Japanese with transitions */
+html[lang="ja"] .text-responsive {
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  transition: line-height 0.2s ease-in-out, letter-spacing 0.2s ease-in-out;
+}
+
+html[lang="en"] .text-responsive {
+  line-height: 1.5;
+  letter-spacing: normal;
+  transition: line-height 0.2s ease-in-out, letter-spacing 0.2s ease-in-out;
+}
+
+/* Button adjustments for Japanese with transitions */
+html[lang="ja"] .btn-responsive {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  min-width: fit-content;
+  transition: padding 0.2s ease-in-out;
+}
+
+html[lang="en"] .btn-responsive {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  transition: padding 0.2s ease-in-out;
 }

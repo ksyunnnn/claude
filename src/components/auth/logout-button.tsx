@@ -3,9 +3,11 @@
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
+import { useAuthTranslations } from '@/lib/i18n/client'
 
 export function LogoutButton() {
   const router = useRouter()
+  const t = useAuthTranslations()
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -15,8 +17,8 @@ export function LogoutButton() {
   }
 
   return (
-    <Button onClick={handleLogout} variant="ghost">
-      Sign out
+    <Button onClick={handleLogout} variant="ghost" className="btn-responsive text-responsive">
+      {t('signOut')}
     </Button>
   )
 }

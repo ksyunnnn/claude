@@ -1,21 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import type { User } from '@/types/database'
 
-export async function getUserByUsername(username: string): Promise<User | null> {
-  const supabase = await createClient()
-  
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('username', username)
-    .single()
-
-  if (error || !profile) {
-    return null
-  }
-
-  return profile
-}
 
 export async function getUserByIdentifier(identifier: string): Promise<User | null> {
   const supabase = await createClient()
