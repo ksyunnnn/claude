@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { ProfileForm } from './profile-form'
 import { LogoutButton } from '@/components/auth/logout-button'
 import { Navigation } from '@/components/navigation'
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 export default async function SettingsPage() {
   const supabase = await createClient()
@@ -29,6 +30,19 @@ export default async function SettingsPage() {
           <section>
             <h2 className="text-xl font-semibold mb-4">Profile</h2>
             <ProfileForm profile={profile} />
+          </section>
+
+          <section className="border-t pt-8">
+            <h2 className="text-xl font-semibold mb-4">Language</h2>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <p className="font-medium">Language Preference</p>
+                <p className="text-sm text-muted-foreground">
+                  Choose your preferred language for the interface
+                </p>
+              </div>
+              <LanguageSwitcher />
+            </div>
           </section>
 
           <section className="border-t pt-8">

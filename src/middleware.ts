@@ -1,10 +1,28 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { locales } from './i18n'
 
 export async function middleware(request: NextRequest) {
+  // Handle internationalization first - but since we don't want route-based locales,
+  // we'll handle locale detection via cookies
+  const locale = request.cookies.get('NEXT_LOCALE')?.value || 
+                 request.headers.get('accept-language')?.split(',')[0]?.split('-')[0] ||
+                 'ja'
+  
+  // Ensure locale is valid
+  const validLocale = locales.includes(locale as (typeof locales)[number]) ? locale : 'ja'
+  
   let supabaseResponse = NextResponse.next({
     request,
   })
+
+  // Set locale cookie if not set or different
+  if (!request.cookies.get('NEXT_LOCALE') || request.cookies.get('NEXT_LOCALE')?.value !== validLocale) {
+    supabaseResponse.cookies.set('NEXT_LOCALE', validLocale, { 
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    })
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
