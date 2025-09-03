@@ -144,6 +144,8 @@ export const ja = {
     userNotFound: "ユーザーが見つかりません",
     commandNotFound: "コマンドが見つかりません",
     anonymousUser: "匿名ユーザー",
-    backToHome: "ホームに戻る"
+    backToHome: "ホームに戻る",
+    languageSwitching: "言語切り替え中...",
+    languageSwitchingDesc: "しばらくお待ちください"
   }
 } as const satisfies Translation;
