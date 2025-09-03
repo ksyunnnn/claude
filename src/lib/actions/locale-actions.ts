@@ -34,29 +34,3 @@ export async function updateUserLocale(locale: Locale) {
   return { success: true }
 }
 
-export async function getUserLocale(): Promise<Locale> {
-  // Check cookie first
-  const cookieStore = await cookies()
-  const cookieLocale = cookieStore.get('NEXT_LOCALE')?.value
-  
-  if (cookieLocale && (cookieLocale === 'ja' || cookieLocale === 'en')) {
-    return cookieLocale
-  }
-
-  // Fallback to user metadata if authenticated
-  try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (user?.user_metadata?.preferred_locale) {
-      const preferredLocale = user.user_metadata.preferred_locale
-      if (preferredLocale === 'ja' || preferredLocale === 'en') {
-        return preferredLocale
-      }
-    }
-  } catch (error) {
-    console.warn('Failed to get user locale from metadata:', error)
-  }
-  
-  return 'ja' // Default locale
-}
