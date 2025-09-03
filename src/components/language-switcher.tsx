@@ -1,20 +1,21 @@
 'use client'
 
-import { useTransition, useRef, useCallback, useEffect } from 'react'
+import { useState, useTransition, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Locale } from '@/i18n'
 import { Button } from '@/components/ui/button'
 import { updateUserLocale } from '@/lib/actions/locale-actions'
 import { useLocale } from '@/lib/i18n/client'
-import { useLanguageContext } from './language-context'
 
 export function LanguageSwitcher() {
   const locale = useLocale() as Locale
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const { isLanguageSwitching, setIsLanguageSwitching } = useLanguageContext()
+  const [isLanguageSwitching, setIsLanguageSwitching] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const mountedRef = useRef(true)
+
+  console.log('🌐 Current locale:', locale, 'isLanguageSwitching:', isLanguageSwitching)
 
   // Handle component unmount cleanup
   useEffect(() => {
@@ -23,6 +24,8 @@ export function LanguageSwitcher() {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
+      // Clean up body classes on unmount
+      document.body.classList.remove('overflow-hidden', 'switching-language')
     }
   }, [])
 
@@ -64,7 +67,7 @@ export function LanguageSwitcher() {
         }
       }
     })
-  }, [locale, isLanguageSwitching, setIsLanguageSwitching, router])
+  }, [locale, isLanguageSwitching, router])
 
   const isLoading = isPending || isLanguageSwitching
 
