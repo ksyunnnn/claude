@@ -37,6 +37,7 @@ NNNN-title-with-dashes.md
 - [ADR-0008: ユーザー識別子改善 - Username/UUID両対応システム](0008-user-identifier-improvement.md)
 - [ADR-0009: Remotion動画制作システムの採用とメインプロジェクトへの統合](0009-remotion-video-creation-adoption.md)
 - [ADR-0010: コマンドいいねシステムの設計とユーザー体験改善](0010-command-like-system-design.md)
+- [ADR-0011: 多言語対応機能の実装](0011-internationalization-implementation.md)
 
 ## 自動化システム
 
